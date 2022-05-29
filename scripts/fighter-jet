@@ -1,0 +1,339 @@
+console.clear();
+
+gsap.registerPlugin(MotionPathPlugin);
+
+let baseURL = "https://s3-us-west-2.amazonaws.com/s.cdpn.io/106114/";
+
+let w = window.innerWidth;
+let h = window.innerHeight;
+
+let loader = new PIXI.loaders.Loader(baseURL)
+  .add("fighter-02.json?v=4")
+  .add("trail", "particle01.png?v=4")
+  .load((loader, assets) => new Demo(assets));
+
+//
+// DEMO
+// ===========================================================================
+class Demo {
+  constructor(assets) {
+
+    this.last = performance.now();
+    this.time = 0;
+    this.size = { x: 1200, y: 870 };
+
+    this.renderer = PIXI.autoDetectRenderer(this.size.x, this.size.y, {
+      view: document.querySelector("#view"),
+      backgroundColor: 0x000000,
+    });
+
+    this.stage = new PIXI.Container();
+    this.fighter = new Fighter(this.stage, assets);
+
+    window.addEventListener("resize", () => this.resize());
+
+    gsap.ticker.add(() => this.render());
+
+    this.resize();
+
+    gsap.set("#loading", { autoAlpha: 0 });
+    gsap.to("main", { autoAlpha: 1, duration: 0.5 });
+  }
+
+  render() {
+    let current = performance.now();
+    this.time = current - this.last;
+    this.last = current;
+    this.fighter.update(this.time);
+    this.renderer.render(this.stage);
+  }
+
+  resize() {
+    w = window.innerWidth;
+    h = window.innerHeight;
+
+    let ratio = Math.min(w / this.size.x, h / this.size.y);
+
+    this.stage.scale.set(ratio);
+    this.renderer.resize(w, h);
+  }
+}
+
+//
+// MOTION PATH
+// ===========================================================================
+class MotionPath {
+  constructor(path) {
+    let d = document.querySelector(path).getAttribute("d");
+    let rawPath = MotionPathPlugin.stringToRawPath(d)[0];
+    let values = this.values = [];
+
+    for (let i = 0; i < rawPath.length; i += 2) {
+      values.push({
+        x: rawPath[i],
+        y: rawPath[i + 1]
+      });
+    }
+
+    this.lines = [];
+    this.speeds = [];
+    this.steps = 1000;
+
+    this.speed = {
+      now: 1,
+      min: 0.5,
+      max: 2.5,
+      ratio: 0.5,
+      step: 0.015,
+    };
+
+    this.bezier = {
+      autoRotate: Math.PI / 2,
+      path: this.values,
+      type: "cubic",
+      useRadians: true,
+    };
+
+    this.init();
+  }
+
+  init() {
+    let speed = this.speed;
+    let lines = this.lines;
+
+    let obj = { x: 0, y: 0, rotation: 0 };
+
+    let tween = gsap.to(obj, {
+      paused: true,
+      duration: 1,
+      ease: "none",
+      motionPath: {
+        path: this.values,
+        autoRotate: true,
+        type: "cubic"
+      }
+    });
+
+    // Loop through it twice to blend the start and end speeds together
+    for (let loops = 0; loops < 2; loops++) {
+      for (let i = 0; i <= this.steps; i++) {
+        tween.progress(i * 0.001);
+
+        let rot = obj.rotation % 90;
+        let sign = rot < 0 ? -1 : 1;
+        let mult = Math.abs(rot / 90);
+        let diff = speed.ratio + speed.step * sign * mult || 0;
+
+        speed.ratio = gsap.utils.clamp(0, 1, diff);
+
+        if (!loops) continue;
+
+        let color = lerpColor(speed.ratio);
+
+        lines.push({ color, x: obj.x, y: obj.y });
+
+        speed.now = gsap.utils.interpolate(speed.min, speed.max, speed.ratio);
+
+        this.speeds.push(speed.now);
+      }
+
+      speed.now = gsap.utils.interpolate(speed.min, speed.max, speed.ratio);
+    }
+
+    this.plotSpeed();
+  }
+
+  plotSpeed() {
+    let graphics = new PIXI.Graphics();
+
+    let size = this.lines.length;
+    let prev = this.values[0];
+
+    for (let i = 0; i < size; i++) {
+      let line = this.lines[i];
+
+      graphics.beginFill(line.color);
+      graphics.lineStyle(4, line.color);
+      graphics.drawPolygon(prev.x, prev.y, line.x, line.y, prev.x, prev.y);
+      graphics.endFill();
+
+      prev = line;
+    }
+
+    let box = graphics.getBounds();
+
+    graphics.lineStyle(0);
+    graphics.beginFill(0x000000, 0);
+    graphics.drawRect(0, 0, box.x + box.width, box.y + box.height);
+
+    this.texture = graphics.generateTexture();
+    this.sprite = new PIXI.Sprite(this.texture);
+
+    graphics.destroy();
+  }
+}
+
+//
+// FIGHTER
+// ===========================================================================
+class Fighter {
+  constructor(parent, assets) {
+    this.stallSpeed = 0.55;
+
+    this.sprite = new FighterSprite();
+
+    this.spriteContainer = new PIXI.Container();
+    this.emitterContainer = new PIXI.Container();
+
+    this.emitter = new Emitter(this.emitterContainer, assets.trail.texture);
+    this.motionPath = new MotionPath("#path");
+
+    this.speeds = this.motionPath.speeds;
+
+    this.bezierTween = gsap.to(this.spriteContainer, {
+      duration: 5,
+      paused: true,
+      ease: "none",
+      motionPath: this.motionPath.bezier
+    });
+
+    this.progressTween = gsap.to(this.bezierTween, {
+      duration: 5,
+      progress: 1,
+      repeat: -1,
+      ease: "none",
+      onStart: this.setSpeed,
+      onUpdate: this.setSpeed,
+      callbackScope: this
+    });
+
+    this.spriteContainer.addChild(this.sprite);
+
+    parent.addChild(this.motionPath.sprite);
+    parent.addChild(this.emitterContainer);
+    parent.addChild(this.spriteContainer);
+
+    this.emitter.emit = true;
+  }
+
+  get x() {
+    return this.spriteContainer.x;
+  }
+  get y() {
+    return this.spriteContainer.y;
+  }
+
+  setSpeed() {
+    let index = Math.round(this.progressTween.progress() * 1000);
+    let speed = this.speeds[index];
+
+    gsap.to(this.progressTween, { timeScale: speed, duration: 0.2 });
+
+    if (speed < this.stallSpeed && !this.sprite.inRoll) {
+      this.sprite.roll();
+    }
+  }
+
+  update(time) {
+    this.emitter.spawn(this.x, this.y, time * 0.001);
+  }
+}
+
+//
+// FIGHTER SPRITE
+// ===========================================================================
+class FighterSprite extends PIXI.Sprite {
+  constructor() {
+    super();
+
+    this.total = 30;
+    this.frames = new Array(this.total);
+
+    for (let i = 0; i < this.total; i++) {
+      var frame = `rollSequence00${i < 10 ? "0" + i : i}.png`;
+      this.frames[i] = PIXI.Texture.fromFrame(frame);
+    }
+
+    this.anchor.set(0.5, 0.6);
+    this.pivot.set(0.5);
+
+    this.frame = 0;
+    this.inRoll = false;
+  }
+
+  get frame() {
+    return this._frame;
+  }
+  set frame(n) {
+    n = n % this.total;
+    this._frame = n;
+    this.texture = this.frames[n];
+  }
+
+  roll() {
+    this.inRoll = true;
+
+    gsap.to(this, {
+      duration: 1,
+      frame: this.total,
+      ease: "none",
+      snap: "frame",
+      onComplete: () => this.inRoll = false
+    });
+  }
+}
+
+//
+// EMITTER
+// ===========================================================================
+class Emitter {
+  constructor(container, texture) {
+    this.container = container;
+
+    this.emitter = new cloudkid.Emitter(this.container, [texture], {
+      alpha: { start: 0.8, end: 0.1 },
+      scale: { start: 1, end: 0.3, minimumScaleMultiplier: 1 },
+      color: { start: "#e3f9ff", end: "#0ec8f8" },
+      speed: { start: 0, end: 0 },
+      acceleration: { x: 0, y: 0 },
+      startRotation: { min: 0, max: 0 },
+      rotationSpeed: { min: 0, max: 0 },
+      lifetime: { min: 0.4, max: 0.4 },
+      blendMode: "normal",
+      frequency: 0.008,
+      emitterLifetime: -1,
+      maxParticles: 1000,
+      pos: { x: 0, y: 0 },
+      addAtBack: false,
+      spawnType: "point",
+    });
+  }
+
+  set emit(flag) {
+    this.emitter.emit = flag;
+  }
+
+  spawn(x, y, time) {
+    this.emitter.updateSpawnPos(x, y);
+    this.emitter.update(time);
+  }
+}
+
+//
+// LERP COLOR
+// ===========================================================================
+function lerpColor(progress = 0) {
+  let color1 = [255, 0, 0];
+  let color2 = [0, 255, 0];
+  let rgb = [];
+
+  for (let i = 0; i < 3; i++) {
+    let rgb1 = Math.pow(color1[i], 2);
+    let rgb2 = Math.pow(color2[i], 2);
+
+    rgb[i] = Math.round(Math.sqrt(gsap.utils.interpolate(rgb1, rgb2, progress)));
+  }
+
+  return (1 << 24) + (rgb[0] << 16) + (rgb[1] << 8) + rgb[2];
+}
+
