@@ -17,6 +17,7 @@ let ghostNull = new PIXI.Container()
 let ghost //sprite
 let ghostLight
 let ghostEmitter
+let footprintsEmitter
 let pathOne =
   'M1603,2474c36,7.5,90.2,8.7,111.9-21.2c24-33-20.3-69,3.5-177.5c18.3-83.6,95-103.1,154.7-99.4 c110,7,141.5-8.5,204.5,126.5c49.5,106.1,265.9-58.5,304.5-219c20.5-85.5-396-105-327,19.5c50.5,91.1,132.8,44.6,184.5,66 c32.6,13.5,21.5,146,49.5,154.5c57.9,17.6,95.3-25.5,124.5-97.5c32.9-81-3.2-227.3,53.5-202c65,29-7.5,152.1,43.9,159.4 c80.4,11.5,167,10.3,214.1-14.4c63.1-33.2,24.9-131.7,161.4-140.7s180,22.5,484.5-33c151.9-27.7,273-15,435,0 s160.7-51.1,169.5-103.5c7.9-46.9,16.8-125-45.4-203.8'
 
@@ -76,12 +77,6 @@ Hooks.on('init', function () {
 
 Hooks.once('ready', async () => {
   gsap.registerPlugin(MotionPathPlugin, PixiPlugin)
-  // Set up  main socket listener -- reduntant now? TODO - Remove?
-  /*
-  game.socket.on('module.footsteps-of-otari', (data) => {
-    console.log('footsteps-of-otari.hook type: ' + data.type)
-  })
-  */
   //Setup complete
   console.log('<<<<<<<<<< Footsteps of Otari >>>>>>>>>>')
 })
@@ -102,8 +97,9 @@ Hooks.once('socketlib.ready', () => {
 
 function doStuff() {
   gsap.to(ghostNull, {
-    motionPath: pathTwo,
+    motionPath: { path: pathTwo, autoRotate: true },
     duration: 66,
+    ease: 'none',
   })
 }
 
@@ -131,28 +127,15 @@ async function createGhost() {
   ghost.width = 48
   ghost.height = 48
   ghostNull.addChild(ghost)
-  //
-  const leftFoot = await loadTexture(
-    'modules/footsteps-of-otari/artwork/ghost-left.webp',
-  )
-  const rightFoot = await loadTexture(
-    'modules/footsteps-of-otari/artwork/ghost-left.webp',
-  )
 
   // Ghost Aura Particles
   let now = Date.now()
   ghostEmitter = new PIXI.particles.Emitter(
     // The PIXI.Container to put the emitter in
-    // if using blend modes, it's important to put this
-    // on top of a bitmap, and not use the root stage Container
-    ghostNull,
-
+    ghostContainer,
     // The collection of particle images to use
-    //[PIXI.Texture.fromImage('image.jpg')],
     [ghostTexture],
-
-    // Emitter configuration, edit this to change the look
-    // of the emitter
+    // Emitter configuration
     {
       alpha: { start: 1, end: 0 },
       scale: { start: 0.5, end: 0.1, minimumScaleMultiplier: 1 },
@@ -175,13 +158,51 @@ async function createGhost() {
   )
 
   ghostEmitter.emit = true
-  ghostEmitter.parent = ghostContainer
+
+  // Footstep Particles
+  const leftFoot = await loadTexture(
+    'modules/footsteps-of-otari/artwork/ghost-left.webp',
+  )
+  const rightFoot = await loadTexture(
+    'modules/footsteps-of-otari/artwork/ghost-left.webp',
+  )
+
+  footprintsEmitter = new PIXI.particles.Emitter(
+    // The PIXI.Container to put the emitter in
+    ghostContainer,
+    // The collection of particle images
+    [leftFoot, rightFoot],
+    // Emitter configuration
+    {
+      alpha: { start: 1, end: 0 },
+      scale: { start: 0.5, end: 0.1, minimumScaleMultiplier: 1 },
+      color: { start: '#4af095', end: '#169e0c' },
+      speed: { start: 0, end: 0, minimumSpeedMultiplier: 0 },
+      acceleration: { x: 0, y: 0 },
+      maxSpeed: 0,
+      startRotation: { min: 0, max: 360 },
+      noRotation: false,
+      rotationSpeed: { min: 0, max: 0 },
+      lifetime: { min: 16, max: 18 },
+      blendMode: 'add',
+      frequency: 0.5,
+      emitterLifetime: -1,
+      maxParticles: 500,
+      pos: { x: 0, y: 0 },
+      addAtBack: true,
+      spawnType: 'point',
+    },
+  )
+
+  footprintsEmitter.emit = true
 
   // Particle updater
   canvas.app.ticker.add(() => {
     const newNow = Date.now()
     ghostEmitter.update((newNow - now) * 0.001)
     ghostEmitter.updateOwnerPos(ghostNull.x, ghostNull.y)
+    footprintsEmitter.update((newNow - now) * 0.001)
+    footprintsEmitter.updateOwnerPos(ghostNull.x, ghostNull.y)
     now = newNow
   })
 
