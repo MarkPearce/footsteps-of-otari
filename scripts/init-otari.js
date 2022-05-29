@@ -97,7 +97,7 @@ Hooks.once('socketlib.ready', () => {
 
 function doStuff() {
   gsap.to(ghostNull, {
-    motionPath: { path: pathTwo, autoRotate: true },
+    motionPath: { path: pathTwo, autoRotate: 90 },
     duration: 66,
     ease: 'none',
   })
@@ -116,7 +116,7 @@ async function createGhost() {
   console.log('createGhost')
   //ghost sprite
   const ghostTexture = await loadTexture(
-    'modules/footsteps-of-otari/artwork/ghost-blob.webp',
+    'modules/footsteps-of-otari/artwork/ghost-blob-arrow.webp',
   )
   ghost = new PIXI.Sprite(ghostTexture)
   ghost.name = 'otariOne'
@@ -143,10 +143,10 @@ async function createGhost() {
       speed: { start: 20, end: 5, minimumSpeedMultiplier: 0 },
       acceleration: { x: 0, y: 0 },
       maxSpeed: 0,
-      startRotation: { min: 0, max: 360 },
-      noRotation: true,
+      startRotation: { min: 0, max: 0 },
+      noRotation: false,
       rotationSpeed: { min: 0, max: 0 },
-      lifetime: { min: 0.5, max: 1.8 },
+      lifetime: { min: 0.8, max: 2.1 },
       blendMode: 'add',
       frequency: 0.01,
       emitterLifetime: -1,
@@ -199,6 +199,7 @@ async function createGhost() {
   // Particle updater
   canvas.app.ticker.add(() => {
     const newNow = Date.now()
+    ghostNull.rotation = ghostNull.rotation * (Math.PI / 180)
     ghostEmitter.update((newNow - now) * 0.001)
     ghostEmitter.updateOwnerPos(ghostNull.x, ghostNull.y)
     footprintsEmitter.update((newNow - now) * 0.001)
