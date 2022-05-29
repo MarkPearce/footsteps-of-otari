@@ -174,18 +174,16 @@ async function createGhost() {
     },
   )
 
-  canvas.app.ticker.add(() => {
-    // ghostEmitter.update(canvas.app.ticker.elapsedMS * 0.001)
-    //console.log(tempNum++)
+  ghostEmitter.emit = true
+  ghostEmitter.parent = ghostContainer
 
+  // Particle updater
+  canvas.app.ticker.add(() => {
     const newNow = Date.now()
     ghostEmitter.update((newNow - now) * 0.001)
     ghostEmitter.updateOwnerPos(ghostNull.x, ghostNull.y)
     now = newNow
   })
-
-  ghostEmitter.emit = true
-  ghostEmitter.parent = ghostContainer
 
   // TODO Light Follow
 
