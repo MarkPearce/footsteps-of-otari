@@ -12,7 +12,6 @@ let socket //instance variable for socketLib
 let childNum = 0 //temp
 let tempNum = 0 //
 
-let ghostDisplayObject
 let ghostTimeline = gsap.timeline() //TODO
 
 let ghostContainer = new PIXI.Container()
@@ -95,34 +94,39 @@ Hooks.once('socketlib.ready', () => {
 
 function doStuff(whatLevel) {
   console.log('do level:' + whatLevel)
-  //let ghostPath
   let pathDuration
 
   if (whatLevel == 'two') {
-    console.log('its fucking 2')
     ghostPath = levelTwo
     pathDuration = 36
   }
 
   if (whatLevel == 'three') {
-    console.log('its fucking 3')
     ghostPath = levelThree
     pathDuration = 66
   }
 
   if (whatLevel == 'four') {
-    console.log('its fucking 4')
     ghostPath = levelFour
     pathDuration = 48
   }
 
   console.log('ghostPath: ' + ghostPath)
   console.log('pathDuration: ' + pathDuration)
+  /*
   gsap.to(ghostNull, {
     motionPath: { path: ghostPath, autoRotate: 90 },
     duration: pathDuration,
     ease: 'none',
   })
+  */
+  let ghostAnimation = gsap.to(ghostNull, {
+    motionPath: { path: ghostPath, autoRotate: 90 },
+    duration: pathDuration,
+    ease: 'none',
+  })
+  ghostTimeline.add(ghostAnimation)
+  ghostTimeline.play(0)
 }
 
 async function createGhost() {
@@ -151,10 +155,10 @@ async function createGhost() {
     [ghostTexture],
     // Emitter configuration
     {
-      alpha: { start: 1, end: 0 },
+      alpha: { start: 0.8, end: 0 },
       scale: { start: 0.5, end: 0.1, minimumScaleMultiplier: 1 },
       color: { start: '#4af095', end: '#169e0c' },
-      speed: { start: 20, end: 5, minimumSpeedMultiplier: 1 },
+      speed: { start: 0, end: 0, minimumSpeedMultiplier: 1 },
       acceleration: { x: 0, y: 0 },
       maxSpeed: 20,
       startRotation: { min: 0, max: 0 },
@@ -194,7 +198,7 @@ async function createGhost() {
       startRotation: { min: 0, max: 0 },
       noRotation: false,
       rotationSpeed: { min: 0, max: 0 },
-      lifetime: { min: 16, max: 18 },
+      lifetime: { min: 20, max: 22 },
       blendMode: 'add',
       frequency: stepFrequency,
       emitterLifetime: -1,
@@ -249,8 +253,7 @@ async function createGhost() {
 
   //add to background
   ghostContainer.addChild(ghostNull)
-  //canvas.background.addChild(ghostContainer)
-  ghostDisplayObject = canvas.background.addChild(ghostContainer)
+  canvas.background.addChild(ghostContainer)
 }
 
 async function cleanupGhosts() {
@@ -260,9 +263,11 @@ async function cleanupGhosts() {
   */
   console.log('remove ghosts')
   canvas.app.ticker.remove(updateLoop)
-  ghostDisplayObject.destroy(true)
-  //TODO - kill timeline
-  gsap.killTweensOf(ghostTimeline)
+  canvas.background.removeChild(ghostContainer)
+  ghostContainer.removeChild(ghostNull)
+  ghostNull = new PIXI.Container()
+  ghostContainer = new PIXI.Container()
+  ghostTimeline.clear()
 }
 
 ///////////////////////////////
@@ -271,7 +276,6 @@ async function cleanupGhosts() {
 
 function startRight() {
   rightPrintEmitter.emit = true
-  // gsap.killTweensOf(startRight)
 }
 
 let updateLoop = function particleUpdater() {
