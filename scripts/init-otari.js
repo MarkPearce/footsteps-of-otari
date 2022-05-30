@@ -9,10 +9,8 @@ import gsap, {
 
 let socket //instance variable for socketLib
 
-let childNum = 0 //temp
-let tempNum = 0 //
-
-let ghostTimeline = gsap.timeline() //TODO
+//let ghostTimeline = gsap.timeline({ onUpdate: ghostUpdater, paused: true }) //TODO progress and animate placable
+let ghostTimeline = gsap.timeline({ paused: true })
 
 let ghostContainer = new PIXI.Container()
 let ghostNull = new PIXI.Container()
@@ -73,6 +71,11 @@ Hooks.on('init', function () {
   Hooks.callAll('FootstepsOfOtari', game.modules.get('footsteps-of-otari').api)
 })
 
+Hooks.on('canvasInit', async () => {
+  //get rid of all ghosts
+  cleanupGhosts()
+})
+
 Hooks.once('ready', async () => {
   gsap.registerPlugin(MotionPathPlugin, PixiPlugin)
   //Setup complete
@@ -86,6 +89,7 @@ Hooks.once('socketlib.ready', () => {
   socket.register('doStuff', doStuff)
   socket.register('createGhost', createGhost)
   socket.register('cleanupGhosts', cleanupGhosts)
+  socket.register('updateLight', updateLight)
 })
 
 //////////////////////////
@@ -93,7 +97,6 @@ Hooks.once('socketlib.ready', () => {
 //////////////////////////
 
 function doStuff(whatLevel) {
-  console.log('do level:' + whatLevel)
   let pathDuration
 
   if (whatLevel == 'two') {
@@ -111,16 +114,9 @@ function doStuff(whatLevel) {
     pathDuration = 48
   }
 
-  console.log('ghostPath: ' + ghostPath)
-  console.log('pathDuration: ' + pathDuration)
-  /*
-  gsap.to(ghostNull, {
-    motionPath: { path: ghostPath, autoRotate: 90 },
-    duration: pathDuration,
-    ease: 'none',
-  })
-  */
-  let ghostAnimation = gsap.to(ghostNull, {
+  let ghostParts = [ghostNull, ghostLight]
+  let ghostAnimation = gsap.to(ghostParts, {
+    //let ghostAnimation = gsap.to(ghostNull, {
     motionPath: { path: ghostPath, autoRotate: 90 },
     duration: pathDuration,
     ease: 'none',
@@ -130,7 +126,7 @@ function doStuff(whatLevel) {
 }
 
 async function createGhost() {
-  console.log('createGhost')
+  // console.log('createGhost')
   //ghost sprite
   const ghostTexture = await loadTexture(
     'modules/footsteps-of-otari/artwork/ghost-blob.webp',
@@ -250,7 +246,7 @@ async function createGhost() {
   canvas.app.ticker.add(updateLoop)
 
   // TODO Light Follow
-
+  ghostLight = createGhostLight()
   //add to background
   ghostContainer.addChild(ghostNull)
   canvas.background.addChild(ghostContainer)
@@ -293,14 +289,63 @@ let updateLoop = function particleUpdater() {
   now = newNow
 }
 
+async function createGhostLight() {
+  let brightRadius = 0
+  let dimRadius = 4
+  let lightColor = '#66eb75'
+  //let x = canvas.scene._viewPosition.x
+  //let y = canvas.scene._viewPosition.y
+  let x = 0
+  let y = 0
+  let ghostAnimation = {
+    intensity: 5,
+    reverse: false,
+    speed: 3,
+    type: 'ghost',
+  }
+
+  let ghostlylight = await canvas.scene.createEmbeddedDocuments(
+    'AmbientLight',
+    [
+      {
+        x: x,
+        y: y,
+        rotation: 0,
+        config: {
+          dim: dimRadius,
+          bright: brightRadius,
+          angle: 360,
+          color: lightColor,
+          coloration: 6,
+          alpha: 0.25,
+          gradual: true,
+          contrast: 0,
+          shadows: 0,
+          vision: false,
+          walls: false,
+          animation: ghostAnimation,
+        },
+      },
+    ],
+  )
+  return ghostlylight
+}
+
+async function updateLight() {
+  //socket function run on GM to update embedded document/placable show progress etc
+  if (game.user.isGM) {
+    console.log('ghostTimeline.totalProgress' + ghostTimeline.totalProgress())
+
+    let lightUpdate = [{ x: 1000, y: 1000 }]
+    //game.combat.updateEmbeddedDocuments("Combatant", imgUpdate); // update the lighgt. what light? need id?
+  }
+}
+
 ///////////////////////////////////
 //    DEBUG & TEMP FUNCTIONS     //
 ///////////////////////////////////
 
-async function nameChild() {
-  if (game.user.isGM) {
-    console.log('nameChild' + childNum)
-    console.log('child name:' + canvas.app.stage.getChildAt(childNum).name)
-    childNum++
-  }
+async function ghostUpdater() {
+  //animation update function
+  // send socket to GM
 }
