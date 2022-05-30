@@ -12,6 +12,9 @@ let socket //instance variable for socketLib
 let childNum = 0 //temp
 let tempNum = 0 //
 
+let ghostDisplayObject
+let ghostTimeline = gsap.timeline() //TODO
+
 let ghostContainer = new PIXI.Container()
 let ghostNull = new PIXI.Container()
 let ghost //sprite
@@ -20,7 +23,7 @@ let ghostEmitter // aura particles
 let leftPrintEmitter
 let rightPrintEmitter
 let stepFrequency = 1.5
-
+let now // timer
 let ghostPath
 
 let levelTwo =
@@ -50,8 +53,8 @@ class FootstepsOfOtari {
     socket.executeForEveryone(createGhost)
   }
 
-  static nameChild() {
-    socket.executeForEveryone(nameChild)
+  static removeGhosts() {
+    socket.executeForEveryone(cleanupGhosts)
   }
 }
 
@@ -64,7 +67,7 @@ Hooks.on('init', function () {
   game.modules.get('footsteps-of-otari').api = {
     doTheThing: FootstepsOfOtari.doTheThing,
     makeGhost: FootstepsOfOtari.makeGhost,
-    nameChild: FootstepsOfOtari.nameChild,
+    removeGhosts: FootstepsOfOtari.removeGhosts,
   }
   // now that we've created our API, inform other modules we are ready
   // provide a reference to the module api as the hook arguments for good measure
@@ -83,7 +86,7 @@ Hooks.once('socketlib.ready', () => {
   //register socket functions
   socket.register('doStuff', doStuff)
   socket.register('createGhost', createGhost)
-  socket.register('nameChild', nameChild)
+  socket.register('cleanupGhosts', cleanupGhosts)
 })
 
 //////////////////////////
@@ -138,7 +141,7 @@ async function createGhost() {
   ghost.height = 48
   ghostNull.addChild(ghost)
 
-  let now = Date.now()
+  now = Date.now()
 
   // Ghost Aura Particles
   ghostEmitter = new PIXI.particles.Emitter(
@@ -239,26 +242,27 @@ async function createGhost() {
   rightPrintEmitter.emit = false
   gsap.delayedCall(stepFrequency / 2, startRight)
   // Particle updater
-  canvas.app.ticker.add(() => {
-    const newNow = Date.now()
-    ghostNull.rotation = ghostNull.rotation * (Math.PI / 180)
-    ghostEmitter.update((newNow - now) * 0.001)
-    ghostEmitter.updateOwnerPos(ghostNull.x, ghostNull.y)
-    ghostEmitter.rotate(ghostNull.rotation * (180 / Math.PI))
-    leftPrintEmitter.update((newNow - now) * 0.001)
-    leftPrintEmitter.updateOwnerPos(ghostNull.x, ghostNull.y)
-    leftPrintEmitter.rotate(ghostNull.rotation * (180 / Math.PI))
-    rightPrintEmitter.update((newNow - now) * 0.001)
-    rightPrintEmitter.updateOwnerPos(ghostNull.x, ghostNull.y)
-    rightPrintEmitter.rotate(ghostNull.rotation * (180 / Math.PI))
-    now = newNow
-  })
+
+  canvas.app.ticker.add(updateLoop)
 
   // TODO Light Follow
 
   //add to background
   ghostContainer.addChild(ghostNull)
-  canvas.background.addChild(ghostContainer)
+  //canvas.background.addChild(ghostContainer)
+  ghostDisplayObject = canvas.background.addChild(ghostContainer)
+}
+
+async function cleanupGhosts() {
+  /*
+  if (game.user.isGM) {
+  }
+  */
+  console.log('remove ghosts')
+  canvas.app.ticker.remove(updateLoop)
+  ghostDisplayObject.destroy(true)
+  //TODO - kill timeline
+  gsap.killTweensOf(ghostTimeline)
 }
 
 ///////////////////////////////
@@ -267,7 +271,22 @@ async function createGhost() {
 
 function startRight() {
   rightPrintEmitter.emit = true
-  gsap.killTweensOf(startRight)
+  // gsap.killTweensOf(startRight)
+}
+
+let updateLoop = function particleUpdater() {
+  const newNow = Date.now()
+  ghostNull.rotation = ghostNull.rotation * (Math.PI / 180)
+  ghostEmitter.update((newNow - now) * 0.001)
+  ghostEmitter.updateOwnerPos(ghostNull.x, ghostNull.y)
+  ghostEmitter.rotate(ghostNull.rotation * (180 / Math.PI))
+  leftPrintEmitter.update((newNow - now) * 0.001)
+  leftPrintEmitter.updateOwnerPos(ghostNull.x, ghostNull.y)
+  leftPrintEmitter.rotate(ghostNull.rotation * (180 / Math.PI))
+  rightPrintEmitter.update((newNow - now) * 0.001)
+  rightPrintEmitter.updateOwnerPos(ghostNull.x, ghostNull.y)
+  rightPrintEmitter.rotate(ghostNull.rotation * (180 / Math.PI))
+  now = newNow
 }
 
 ///////////////////////////////////
