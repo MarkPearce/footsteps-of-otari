@@ -4,6 +4,8 @@ async function createGhostLight() {
   let lightColor = '#66eb75'
   //let x = canvas.scene._viewPosition.x
   //let y = canvas.scene._viewPosition.y
+  let x = 0
+  let y = 0
   let ghostAnimation = {
     intensity: 5,
     reverse: false,

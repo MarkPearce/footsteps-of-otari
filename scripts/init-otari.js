@@ -7,6 +7,10 @@ import gsap, {
   PixiPlugin,
 } from '/scripts/greensock/esm/all.js'
 
+import { GhostApplication } from './ghostApplication.js'
+
+let ghostApplication = new GhostApplication(50)
+
 let socket //instance variable for socketLib
 
 //let ghostTimeline = gsap.timeline({ onUpdate: ghostUpdater, paused: true }) //TODO progress and animate placable
@@ -241,7 +245,7 @@ async function createGhost() {
 
   rightPrintEmitter.emit = false
   gsap.delayedCall(stepFrequency / 2, startRight)
-  // Particle updater
+  // PIXI  updater
 
   canvas.app.ticker.add(updateLoop)
 
@@ -250,6 +254,10 @@ async function createGhost() {
   //add to background
   ghostContainer.addChild(ghostNull)
   canvas.background.addChild(ghostContainer)
+
+  if (game.user.isGM) {
+    ghostApplication.render(true)
+  }
 }
 
 async function cleanupGhosts() {
