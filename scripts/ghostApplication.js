@@ -5,6 +5,7 @@ export class GhostApplication extends FormApplication {
   constructor(exampleOption) {
     super()
     this.exampleOption = exampleOption
+    this.totalProgress = 0
   }
 
   static get defaultOptions() {
@@ -14,6 +15,7 @@ export class GhostApplication extends FormApplication {
       template: `./modules/footsteps-of-otari/scripts/ghostApplication.html`,
       id: 'footsteps-of-otari',
       title: 'Footsteps of Otari',
+      width: 320,
     })
   }
 
@@ -22,15 +24,33 @@ export class GhostApplication extends FormApplication {
     return {
       msg: this.exampleOption,
       color: 'red',
+      progressBar: this.totalProgress * 100,
     }
-  }
-
-  activateListeners(html) {
-    super.activateListeners(html)
   }
 
   async _updateObject(event, formData) {
     console.log(formData.exampleInput)
+    this.render() // rerenders the FormApp with the new data.
+  }
+
+  activateListeners(html) {
+    super.activateListeners(html)
+    let ghostTimelineSlider = html.find('#ghostTimelineSlider')
+    ghostTimelineSlider.mousedown((event) => this.mousedownGhostSlider(event))
+
+    ghostTimelineSlider.on('input', (event) => {
+      this.dragGhostSlider(event)
+    })
+  }
+
+  dragGhostSlider(event) {
+    //not called by onInput
+    console.log('dragSlider' + event.currentTarget.value)
+  }
+
+  mousedownGhostSlider(event) {
+    console.log('mousedown')
+    console.dir(event)
   }
 }
 

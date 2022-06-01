@@ -13,8 +13,8 @@ let ghostApplication = new GhostApplication(50)
 
 let socket //instance variable for socketLib
 
-//let ghostTimeline = gsap.timeline({ onUpdate: ghostUpdater, paused: true }) //TODO progress and animate placable
-let ghostTimeline = gsap.timeline({ paused: true })
+let ghostTimeline = gsap.timeline({ onUpdate: ghostUpdater, paused: true }) //TODO progress and animate placable
+//let ghostTimeline = gsap.timeline({ paused: true })
 
 let ghostContainer = new PIXI.Container()
 let ghostNull = new PIXI.Container()
@@ -26,6 +26,8 @@ let rightPrintEmitter
 let stepFrequency = 1.5
 let now // timer
 let ghostPath
+
+let ghostUpdateRate = 0 //counter for the number of greensock updates events before we update socket for gm ghost control dialog
 
 let levelTwo =
   'M5266.7,3306.7c62.2,78.9,66.6,188.3,58.7,235.2c-8.8,52.4-7.5,118.5-169.5,103.5s-283.1-27.7-435,0 c-304.5,55.5-348,24-484.5,33s-81,134.3-152.1,140c-50.6,4-159.7,38.2-229.6,1.7c-35.9-18.8,21-139.8-64-146.7 c-36.6-2.9,5.7,121.7-27.2,202.7c-29.2,72-66.6,115.1-124.5,97.5c-28-8.5-16.9-141-49.5-154.5c-51.7-21.4-134,25.1-184.5-66 c-69-124.5,347.5-105,327-19.5c-38.6,160.5-255,325.1-304.5,219c-63-135-184.4-127.6-201.9-129c-108-9-138.9,18.3-157.2,101.9 c-23.8,108.5,12.2,153-11.8,186c-21.7,29.8-97.9,35.3-123.2-6c-19.7-32.2-21.3-214.7-12-265.3'
@@ -45,7 +47,6 @@ class FootstepsOfOtari {
 
   static doTheThing(argument) {
     // does stuff you want other modules to have access to
-    console.log('play floor: ' + argument)
     socket.executeForEveryone(doStuff, [argument])
   }
 
@@ -93,7 +94,7 @@ Hooks.once('socketlib.ready', () => {
   socket.register('doStuff', doStuff)
   socket.register('createGhost', createGhost)
   socket.register('cleanupGhosts', cleanupGhosts)
-  socket.register('updateLight', updateLight)
+  socket.register('ghostSocketUpdate', ghostSocketUpdate)
 })
 
 //////////////////////////
@@ -118,7 +119,8 @@ function doStuff(whatLevel) {
     pathDuration = 48
   }
 
-  let ghostParts = [ghostNull, ghostLight]
+  //let ghostParts = [ghostNull, ghostLight]
+  let ghostParts = [ghostNull]
   let ghostAnimation = gsap.to(ghostParts, {
     //let ghostAnimation = gsap.to(ghostNull, {
     motionPath: { path: ghostPath, autoRotate: 90 },
@@ -130,7 +132,6 @@ function doStuff(whatLevel) {
 }
 
 async function createGhost() {
-  // console.log('createGhost')
   //ghost sprite
   const ghostTexture = await loadTexture(
     'modules/footsteps-of-otari/artwork/ghost-blob.webp',
@@ -250,7 +251,8 @@ async function createGhost() {
   canvas.app.ticker.add(updateLoop)
 
   // TODO Light Follow
-  ghostLight = createGhostLight()
+  // ghostLight = createGhostLight()
+
   //add to background
   ghostContainer.addChild(ghostNull)
   canvas.background.addChild(ghostContainer)
@@ -261,10 +263,6 @@ async function createGhost() {
 }
 
 async function cleanupGhosts() {
-  /*
-  if (game.user.isGM) {
-  }
-  */
   console.log('remove ghosts')
   canvas.app.ticker.remove(updateLoop)
   canvas.background.removeChild(ghostContainer)
@@ -339,12 +337,18 @@ async function createGhostLight() {
   return ghostlylight
 }
 
-async function updateLight() {
+async function ghostSocketUpdate() {
   //socket function run on GM to update embedded document/placable show progress etc
   if (game.user.isGM) {
-    console.log('ghostTimeline.totalProgress' + ghostTimeline.totalProgress())
-
-    let lightUpdate = [{ x: 1000, y: 1000 }]
+    // console.log('ghostTimeline.totalProgress' + ghostTimeline.totalProgress())
+    // if (ghostUpdateRate++ > 30) {
+    ghostApplication.exampleOption = ghostTimeline.totalProgress()
+    ghostApplication.totalProgress = ghostTimeline.totalProgress()
+    ghostApplication.render(true)
+    //ghostApplication._updateObject
+    // ghostUpdateRate = 0
+    // }
+    //let lightUpdate = [{ x: 1000, y: 1000 }]
     //game.combat.updateEmbeddedDocuments("Combatant", imgUpdate); // update the lighgt. what light? need id?
   }
 }
@@ -355,5 +359,9 @@ async function updateLight() {
 
 async function ghostUpdater() {
   //animation update function
+  if (ghostUpdateRate++ > 30) {
+    socket.executeAsGM(ghostSocketUpdate)
+    ghostUpdateRate = 0
+  }
   // send socket to GM
 }
