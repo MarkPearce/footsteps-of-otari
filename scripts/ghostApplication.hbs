@@ -1,0 +1,27 @@
+<form class="flexcol">
+    <div class="map-version">
+        <label for="map-version">Map Version</label>
+        <input type="radio" name="map-version" value="classic" id="classic" />
+        <label for="classic">
+            Classic
+        </label>
+        <input type="radio" name="map-version" value="remaster" id="remaster" checked />
+        <label for="remaster">
+            Remaster
+        </label>
+    </div>
+    <div class="flexrow ghostControls">
+        <button class="footsteps-of-otari-play-pause"><i></i> Play</button>
+        <select name="speed" id="ghostSpeed">
+            <option value=".25">1/4</option>
+            <option value=".5">1/2</option>
+            <option selected="selected" value="1">1x</option>
+            <option value="2">2x</option>
+            <option value="3x">3</option>
+        </select>
+        <div class="slidecontainer">
+            <input type="range" min="0" max="100" value="{{progressBar}}" class="footsteps-of-otari-timelineSlider"
+                id="ghostTimelineSlider" step="0.01">
+        </div>
+    </div>
+</form>

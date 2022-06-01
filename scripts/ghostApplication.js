@@ -4,26 +4,30 @@
 export class GhostApplication extends FormApplication {
   constructor(exampleOption) {
     super()
-    this.exampleOption = exampleOption
+    //this.exampleOption = exampleOption
     this.totalProgress = 0
   }
 
   static get defaultOptions() {
-    return mergeObject(super.defaultOptions, {
-      classes: ['form'],
+    const _default = super.defaultOptions
+    return mergeObject(_default, {
       popOut: true,
-      template: `./modules/footsteps-of-otari/scripts/ghostApplication.html`,
+      template: `./modules/footsteps-of-otari/scripts/ghostApplication.hbs`,
       id: 'footsteps-of-otari',
       title: 'Footsteps of Otari',
-      width: 320,
+      width: 480,
+      classes: [..._default.classes, 'footsteps'],
+      closeOnSubmit: false,
+      submitOnClose: false,
+      submitOnChange: false,
     })
   }
 
   getData() {
     // Send data to the template
     return {
-      msg: this.exampleOption,
-      color: 'red',
+      //  msg: this.exampleOption,
+      // color: 'red',
       progressBar: this.totalProgress * 100,
     }
   }
@@ -35,10 +39,11 @@ export class GhostApplication extends FormApplication {
 
   activateListeners(html) {
     super.activateListeners(html)
-    let ghostTimelineSlider = html.find('#ghostTimelineSlider')
-    ghostTimelineSlider.mousedown((event) => this.mousedownGhostSlider(event))
+    // let timelineSlider = html.find('#ghostTimelineSlider')
+    let timelineSlider = html.find('.footsteps-of-otari-timelineSlider')
+    timelineSlider.mousedown((event) => this.mousedownGhostSlider(event))
 
-    ghostTimelineSlider.on('input', (event) => {
+    timelineSlider.on('input', (event) => {
       this.dragGhostSlider(event)
     })
   }
