@@ -1,5 +1,3 @@
-
-
 .app.footsteps .ghostApp {
     width: 480px;
     padding-right: 2em;
@@ -32,21 +30,23 @@
     display: flex;
     margin-top: .5em;
     flex-direction: row;
-    justify-content: space-between;
+    justify-content: left;
+    align-content: center;
 }
 
 .app.footsteps .footsteps-of-otari-playControl {
-    width: 64px;
+    width: 48px;
+    align-content: center;
 }
 
 .app.footsteps .footsteps-of-otari-playSpeed {
     width: 48px;
-    font-size: 12px;
+    text-align: left;
 }
 
 .app.footsteps .footsteps-of-otari-time {
-    display: block;
-    width: 300px;
+    flex-grow: 1;
+    padding-left: .5em;
 }
 
 .app.footsteps .footsteps-of-otari-timelineSlider {
