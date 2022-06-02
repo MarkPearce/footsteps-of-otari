@@ -4,8 +4,13 @@
 export class GhostApplication extends FormApplication {
   constructor(exampleOption) {
     super()
-    //this.exampleOption = exampleOption
     this.totalProgress = 0
+    this.isPlaying = false
+    this.playbackSpeed = 1
+    this.mapVersion = "remaster"
+    this.mapLevel = 2
+    this.ghostExists = false
+
   }
 
   static get defaultOptions() {
@@ -39,10 +44,8 @@ export class GhostApplication extends FormApplication {
 
   activateListeners(html) {
     super.activateListeners(html)
-    // let timelineSlider = html.find('#ghostTimelineSlider')
     let timelineSlider = html.find('.footsteps-of-otari-timelineSlider')
     timelineSlider.mousedown((event) => this.mousedownGhostSlider(event))
-
     timelineSlider.on('input', (event) => {
       this.dragGhostSlider(event)
     })

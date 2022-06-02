@@ -7,11 +7,32 @@ import gsap, {
   PixiPlugin,
 } from '/scripts/greensock/esm/all.js'
 
-import { GhostApplication } from './ghostApplication.js'
-
-let ghostApplication = new GhostApplication(50)
+//////////////////////////////////
+////// Controls Application //////
+//////////////////////////////////
 
 let socket //instance variable for socketLib
+import { GhostApplication } from './ghostApplication.js'
+let ghostUpdateRate = 0 //counter for the number of greensock updates events before we update socket for gm ghost control dialog
+
+let isPlaying = false
+let playbackSpeed = 1
+let mapVersion = 'remaster'
+let mapLevel = 2
+let ghostExists = false // is there a ghost?
+
+let ghostApplication = new GhostApplication(
+  0,
+  isPlaying,
+  playbackSpeed,
+  mapVersion,
+  mapLevel,
+  ghostExists,
+) // pass initial props
+
+/////////////////////////////////////////
+///  Ghost animation and PIXI stuff   //
+////////////////////////////////////////
 
 let ghostTimeline = gsap.timeline({ onUpdate: ghostUpdater, paused: true }) //TODO progress and animate placable
 //let ghostTimeline = gsap.timeline({ paused: true })
@@ -27,8 +48,7 @@ let stepFrequency = 1.5
 let now // timer
 let ghostPath
 
-let ghostUpdateRate = 0 //counter for the number of greensock updates events before we update socket for gm ghost control dialog
-
+////// Remaster Maps ///////
 let levelTwo =
   'M5266.7,3306.7c62.2,78.9,66.6,188.3,58.7,235.2c-8.8,52.4-7.5,118.5-169.5,103.5s-283.1-27.7-435,0 c-304.5,55.5-348,24-484.5,33s-81,134.3-152.1,140c-50.6,4-159.7,38.2-229.6,1.7c-35.9-18.8,21-139.8-64-146.7 c-36.6-2.9,5.7,121.7-27.2,202.7c-29.2,72-66.6,115.1-124.5,97.5c-28-8.5-16.9-141-49.5-154.5c-51.7-21.4-134,25.1-184.5-66 c-69-124.5,347.5-105,327-19.5c-38.6,160.5-255,325.1-304.5,219c-63-135-184.4-127.6-201.9-129c-108-9-138.9,18.3-157.2,101.9 c-23.8,108.5,12.2,153-11.8,186c-21.7,29.8-97.9,35.3-123.2-6c-19.7-32.2-21.3-214.7-12-265.3'
 
@@ -45,18 +65,50 @@ let levelFour =
 class FootstepsOfOtari {
   //API Functions below : must be registered with API and SOCKET
 
-  static doTheThing(argument) {
+  static _doTheThing(argument) {
     // does stuff you want other modules to have access to
-    socket.executeForEveryone(doStuff, [argument])
+    socket.executeForEveryone(doTheThing, [argument])
   }
 
-  static makeGhost() {
+  static _makeGhost() {
     console.log('make a ghost')
-    socket.executeForEveryone(createGhost)
+    socket.executeForEveryone(makeGhost)
   }
 
-  static removeGhosts() {
-    socket.executeForEveryone(cleanupGhosts)
+  static _removeGhosts() {
+    socket.executeForEveryone(removeGhosts)
+  }
+
+  static _openFootstepsController() {
+    socket.executeAsGM(openFootstepsController)
+  }
+
+  static _selectMapVersion(version) {
+    socket.executeForEveryone(selectMapVersion)
+  }
+
+  static _selectMapLayer(mapNumber) {
+    socket.executeForEveryone(selectMapLayer)
+  }
+
+  static _playToggle() {
+    socket.executeForEveryone(playToggle)
+  }
+
+  static _mousedownGhostSlider() {
+    socket.executeForEveryone(mousedownGhostSlider)
+  }
+
+  static _changeGhostSlider() {
+    socket.executeForEveryone(changeGhostSlider)
+  }
+
+  static _dragGhostSlider() {
+    socket.executeForEveryone(dragGhostSlider)
+  }
+
+  static _setPlaybackSpeed() {
+    socket.executeForEveryone(setPlaybackSpeed)
   }
 }
 
@@ -67,9 +119,10 @@ class FootstepsOfOtari {
 Hooks.on('init', function () {
   // once set up, we create our API object. Each function needs an entry
   game.modules.get('footsteps-of-otari').api = {
-    doTheThing: FootstepsOfOtari.doTheThing,
-    makeGhost: FootstepsOfOtari.makeGhost,
-    removeGhosts: FootstepsOfOtari.removeGhosts,
+    _doTheThing: FootstepsOfOtari._doTheThing,
+    _makeGhost: FootstepsOfOtari._makeGhost,
+    _removeGhosts: FootstepsOfOtari._removeGhosts,
+    _openFootstepsController: FootstepsOfOtari._openFootstepsController,
   }
   // now that we've created our API, inform other modules we are ready
   // provide a reference to the module api as the hook arguments for good measure
@@ -78,7 +131,12 @@ Hooks.on('init', function () {
 
 Hooks.on('canvasInit', async () => {
   //get rid of all ghosts
-  cleanupGhosts()
+  removeGhosts()
+})
+
+Hooks.on('closeGhostApplication', async () => {
+  //get rid of all ghosts
+  removeGhosts()
 })
 
 Hooks.once('ready', async () => {
@@ -91,17 +149,19 @@ Hooks.once('socketlib.ready', () => {
   //register module
   socket = socketlib.registerModule('footsteps-of-otari')
   //register socket functions
-  socket.register('doStuff', doStuff)
-  socket.register('createGhost', createGhost)
-  socket.register('cleanupGhosts', cleanupGhosts)
-  socket.register('ghostSocketUpdate', ghostSocketUpdate)
+  /// ('external name from static above', function in api below)
+  socket.register('_doTheThing', doTheThing)
+  socket.register('_makeGhost', makeGhost)
+  socket.register('_removeGhosts', removeGhosts)
+  socket.register('_ghostSocketUpdate', ghostSocketUpdate)
+  socket.register('_openFootstepsController', openFootstepsController)
 })
 
 //////////////////////////
 //    API FUNCTIONS     //
 //////////////////////////
 
-function doStuff(whatLevel) {
+function doTheThing(whatLevel) {
   let pathDuration
 
   if (whatLevel == 'two') {
@@ -119,10 +179,9 @@ function doStuff(whatLevel) {
     pathDuration = 48
   }
 
-  //let ghostParts = [ghostNull, ghostLight]
+  //let ghostParts = [ghostNull, ghostLight] //maybe a light will work?
   let ghostParts = [ghostNull]
   let ghostAnimation = gsap.to(ghostParts, {
-    //let ghostAnimation = gsap.to(ghostNull, {
     motionPath: { path: ghostPath, autoRotate: 90 },
     duration: pathDuration,
     ease: 'none',
@@ -131,7 +190,7 @@ function doStuff(whatLevel) {
   ghostTimeline.play(0)
 }
 
-async function createGhost() {
+async function makeGhost() {
   //ghost sprite
   const ghostTexture = await loadTexture(
     'modules/footsteps-of-otari/artwork/ghost-blob.webp',
@@ -257,12 +316,15 @@ async function createGhost() {
   ghostContainer.addChild(ghostNull)
   canvas.background.addChild(ghostContainer)
 
+  //old way to open dialog
+  /*
   if (game.user.isGM) {
     ghostApplication.render(true)
   }
+  */
 }
 
-async function cleanupGhosts() {
+async function removeGhosts() {
   console.log('remove ghosts')
   canvas.app.ticker.remove(updateLoop)
   canvas.background.removeChild(ghostContainer)
@@ -270,6 +332,11 @@ async function cleanupGhosts() {
   ghostNull = new PIXI.Container()
   ghostContainer = new PIXI.Container()
   ghostTimeline.clear()
+}
+
+async function openFootstepsController() {
+  console.log('open controller')
+  ghostApplication.render(true)
 }
 
 ///////////////////////////////
