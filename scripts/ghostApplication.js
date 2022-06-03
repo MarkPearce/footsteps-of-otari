@@ -87,7 +87,7 @@ export class GhostApplication extends FormApplication {
   }
 
   setToggleButton(isPlaying) {
-    if (isPlaying == false) {
+    if (isPlaying == true) {
       this.playIcon.css('display', 'none')
       this.pauseIcon.css('display', 'block')
     } else {
