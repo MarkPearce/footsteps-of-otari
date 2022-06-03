@@ -20,7 +20,7 @@ let isPlaying = false
 let isPausedforSlider = false
 let playbackSpeed = 1
 let mapVersion = 'remaster'
-let mapLevel = 2
+let mapLevel = 'two'
 let ghostExists = false // is there a ghost?
 
 let ghostApplication = new GhostApplication(
@@ -29,7 +29,6 @@ let ghostApplication = new GhostApplication(
   playbackSpeed,
   mapVersion,
   mapLevel,
-  ghostExists,
 ) // pass initial props
 
 /////////////////////////////////////////
@@ -85,12 +84,12 @@ class FootstepsOfOtari {
     socket.executeAsGM(openFootstepsController)
   }
 
-  static _selectMapVersion(version) {
-    socket.executeForEveryone(selectMapVersion)
+  static _selectMapVersion(whatVersion) {
+    socket.executeForEveryone(selectMapVersion, [whatVersion])
   }
 
-  static _selectMapLayer(mapNumber) {
-    socket.executeForEveryone(selectMapLayer)
+  static _selectMapLevel(whatLevel) {
+    socket.executeForEveryone(selectMapLevel, [whatLevel])
   }
 
   static _playToggle() {
@@ -109,8 +108,8 @@ class FootstepsOfOtari {
     socket.executeForEveryone(dragGhostSlider)
   }
 
-  static _setPlaybackSpeed() {
-    socket.executeForEveryone(setPlaybackSpeed)
+  static _setPlaybackSpeed(whatSpeed) {
+    socket.executeForEveryone(setPlaybackSpeed, [whatSpeed])
   }
 }
 
@@ -126,6 +125,9 @@ Hooks.on('init', function () {
     _removeGhosts: FootstepsOfOtari._removeGhosts,
     _openFootstepsController: FootstepsOfOtari._openFootstepsController,
     _playToggle: FootstepsOfOtari._playToggle,
+    _selectMapVersion: FootstepsOfOtari._selectMapVersion,
+    _selectMapLevel: FootstepsOfOtari._selectMapLevel,
+    _setPlaybackSpeed: FootstepsOfOtari._setPlaybackSpeed,
   }
   // now that we've created our API, inform other modules we are ready
   // provide a reference to the module api as the hook arguments for good measure
@@ -133,15 +135,13 @@ Hooks.on('init', function () {
 })
 
 Hooks.on('canvasInit', async () => {
-  //get rid of all ghosts
-  console.log('clean scene')
+  //get rid of clients ghost when changing scene!
   removeGhosts()
 })
 
 Hooks.on('closeGhostApplication', async () => {
   //get rid of all ghosts
   game.modules.get('footsteps-of-otari')?.api?._removeGhosts()
-  // removeGhosts()
 })
 
 Hooks.once('ready', async () => {
@@ -161,6 +161,9 @@ Hooks.once('socketlib.ready', () => {
   socket.register('_ghostSocketUpdate', ghostSocketUpdate)
   socket.register('_openFootstepsController', openFootstepsController)
   socket.register('_playToggle', playToggle)
+  socket.register('_selectMapVersion', selectMapVersion)
+  socket.register('_selectMapLevel', selectMapLevel)
+  socket.register('_setPlaybackSpeed', setPlaybackSpeed)
 })
 
 //////////////////////////
@@ -326,6 +329,15 @@ async function makeGhost() {
   canvas.background.addChild(ghostContainer)
 }
 
+/////////////////////////////////////
+//    CONTROLLER API FUNCTIONS     //
+/////////////////////////////////////
+
+async function openFootstepsController() {
+  console.log('open controller')
+  ghostApplication.render(true)
+}
+
 async function removeGhosts() {
   console.log('remove ghosts')
   canvas.app.ticker.remove(updateLoop)
@@ -334,11 +346,10 @@ async function removeGhosts() {
   ghostNull = new PIXI.Container()
   ghostContainer = new PIXI.Container()
   ghostTimeline.clear()
-}
-
-async function openFootstepsController() {
-  console.log('open controller')
-  ghostApplication.render(true)
+  //reset defaults
+  ghostExists = false
+  isPlaying = false
+  isPausedforSlider = false
 }
 
 function playToggle() {
@@ -353,6 +364,21 @@ function playToggle() {
     ghostApplication.setToggleButton(isPlaying)
   }
 }
+
+function selectMapVersion(whatversion) {
+  console.log('version = ' + whatversion)
+}
+
+function selectMapLevel(whatLevel) {
+  console.log('version = ' + whatLevel)
+}
+
+function setPlaybackSpeed(whatSpeed) {
+  console.log('setPlaybackSpeed ' + whatSpeed)
+  playbackSpeed = whatSpeed
+  ghostTimeline.timeScale(playbackSpeed).play()
+}
+
 ///////////////////////////////
 //    INTERNAL FUNCTIONS     //
 ///////////////////////////////

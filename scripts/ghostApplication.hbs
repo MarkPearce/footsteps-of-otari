@@ -2,12 +2,12 @@
     <div class="map-selection-block">
         <label class="footsteps-of-otari-optionLabel" for="map-version">Map Version:</label>
         <div class="footsteps-of-otari-radio-group">
-            <div class="footsteps-of-otari-radio">
-                <input type="radio" name="map-version" value="classic" id="classic" />
+            <div class="footsteps-of-otari-radio ">
+                <input type="radio" name="footsteps-of-otari-map-version" value="classic" id="classic" />
                 <label for="classic"> Classic</label>
             </div>
             <div class="footsteps-of-otari-radio">
-                <input type="radio" name="map-version" value="remaster" id="remaster" checked />
+                <input type="radio" name="footsteps-of-otari-map-version" value="remaster" id="remaster" checked />
                 <label for="remaster"> Remaster </label>
             </div>
         </div>
@@ -16,28 +16,28 @@
         <label class="footsteps-of-otari-optionLabel" for="map-floor">Gauntlight level:</label>
         <div class="footsteps-of-otari-radio-group">
             <div class="footsteps-of-otari-radio">
-                <input type="radio" id="floor-two" name="footsteps-of-otari-floor" value="Two" checked>
+                <input type="radio" id="floor-two" name="footsteps-of-otari-floor" value="two" checked>
                 <label for="floor-two">Two</label>
             </div>
             <div class="footsteps-of-otari-radio">
-                <input type="radio" id="floor-three" name="footsteps-of-otari-floor" value="Three">
+                <input type="radio" id="floor-three" name="footsteps-of-otari-floor" value="three">
                 <label for="floor-three">Three</label>
             </div>
             <div class="footsteps-of-otari-radio">
-                <input type="radio" id="floor-four" name="footsteps-of-otari-floor" value="Four">
+                <input type="radio" id="floor-four" name="footsteps-of-otari-floor" value="four">
                 <label for="floor-four">Four</label>
             </div>
         </div>
     </div>
     <div class="footsteps-of-otari-ghostControls">
-        <button class="footsteps-of-otari-playControl footsteps-of-otari-button" type="button" data-action="create"><i
+        <button class="footsteps-of-otari-playControl footsteps-of-otari-button" type="button"><i
                 class="fas fa-play"></i> <i class="fas fa-pause"></i></button>
         <select class="footsteps-of-otari-playSpeed footsteps-of-otari-button" id="ghostSpeed">
-            <option value=".25">1/4</option>
-            <option value=".5">1/2</option>
+            <option value=".25">1/4x</option>
+            <option value=".5">1/2x</option>
             <option selected="selected" value="1">1x</option>
+            <option value="1.5">1.5x</option>
             <option value="2">2x</option>
-            <option value="3x">3</option>
         </select>
         <div class="footsteps-of-otari-time">
             <input type="range" min="0" max="100" value="{{progressBar}}" class="footsteps-of-otari-timelineSlider"
@@ -45,8 +45,7 @@
         </div>
     </div>
     <div class="footsteps-of-otari-footer">
-        <button class="footsteps-of-otari-erase footsteps-of-otari-button" type="button"
-            data-action="footsteps-of-otari-remove">Remove
+        <button class="footsteps-of-otari-erase footsteps-of-otari-button" type="button">Remove
             ghost</button>
     </div>
 
