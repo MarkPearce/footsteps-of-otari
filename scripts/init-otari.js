@@ -94,7 +94,7 @@ class FootstepsOfOtari {
   }
 
   static _playToggle(is) {
-    socket.executeForEveryone(playToggle, [is])
+    socket.executeForEveryone(playToggle)
   }
 
   static _mousedownGhostSlider() {
@@ -191,7 +191,8 @@ function doTheThing(whatLevel) {
     ease: 'none',
   })
   ghostTimeline.add(ghostAnimation)
-  ghostTimeline.play(0)
+  ghostTimeline.seek(0.01)
+  ///ghostTimeline.play(0)
   //ghostTimeline.pause(0)
   // isPlaying = true
 }
@@ -338,20 +339,18 @@ async function openFootstepsController() {
   ghostApplication.render(true)
 }
 
-function playToggle(togglePlaying) {
-  isPlaying = togglePlaying
-  console.log('togglePlaying ' + togglePlaying)
-  console.log('main isPlaying' + isPlaying)
+function playToggle() {
+  console.log('main isPlaying ' + isPlaying)
 
-  if (isPlaying === true) {
+  if (isPlaying) {
+    console.log('pause')
+    ghostTimeline.pause()
+  } else {
     console.log('play')
     ghostTimeline.play()
   }
-
-  if (isPlaying === false) {
-    console.log('pause')
-    ghostTimeline.pause()
-  }
+  isPlaying = !isPlaying
+  ghostApplication.setToggleButton(isPlaying)
 }
 ///////////////////////////////
 //    INTERNAL FUNCTIONS     //

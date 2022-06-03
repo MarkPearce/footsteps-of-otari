@@ -5,7 +5,7 @@ export class GhostApplication extends FormApplication {
   constructor(exampleOption) {
     super()
     this.totalProgress = 0
-    this.isPlaying = false
+    //this.isPlaying = false
     this.playbackSpeed = 1
     this.mapVersion = 'remaster'
     this.mapLevel = 2
@@ -82,17 +82,18 @@ export class GhostApplication extends FormApplication {
   }
 
   playToggle(event) {
-    if (this.isPlaying == false) {
+    console.log('playToggle')
+    game.modules.get('footsteps-of-otari')?.api?._playToggle()
+  }
+
+  setToggleButton(isPlaying) {
+    if (isPlaying == false) {
       this.playIcon.css('display', 'none')
       this.pauseIcon.css('display', 'block')
-      this.isPlaying = true
     } else {
       this.playIcon.css('display', 'block')
       this.pauseIcon.css('display', 'none')
-      this.isPlaying = false
     }
-    console.log('isplaying =' + this.isPlaying)
-    game.modules.get('footsteps-of-otari')?.api?._playToggle(this.isPlaying)
   }
 }
 
