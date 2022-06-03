@@ -40,7 +40,7 @@
 }
 
 .app.footsteps .footsteps-of-otari-playSpeed {
-    width: 48px;
+    width: 56px;
     text-align: left;
 }
 
@@ -69,4 +69,14 @@
 .app.footsteps .footsteps-of-otari-erase {
     width: 120px;
     margin-top: .5em;
+}
+
+.app.footsteps .fa-pause {
+    display: none;
+    align-content: center;
+}
+
+.app.footsteps .fa-play {
+    display: block;
+    align-content: center;
 }

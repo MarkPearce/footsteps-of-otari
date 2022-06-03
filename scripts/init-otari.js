@@ -13,9 +13,11 @@ import gsap, {
 
 let socket //instance variable for socketLib
 import { GhostApplication } from './ghostApplication.js'
-let ghostUpdateRate = 0 //counter for the number of greensock updates events before we update socket for gm ghost control dialog
+let ghostUpdateRate = 10 //counter for the number of greensock updates events before we update socket for gm ghost control dialog
+let ghostUpdateCount = 0
 
 let isPlaying = false
+let isPausedforSlider = false
 let playbackSpeed = 1
 let mapVersion = 'remaster'
 let mapLevel = 2
@@ -91,8 +93,8 @@ class FootstepsOfOtari {
     socket.executeForEveryone(selectMapLayer)
   }
 
-  static _playToggle() {
-    socket.executeForEveryone(playToggle)
+  static _playToggle(is) {
+    socket.executeForEveryone(playToggle, [is])
   }
 
   static _mousedownGhostSlider() {
@@ -123,6 +125,7 @@ Hooks.on('init', function () {
     _makeGhost: FootstepsOfOtari._makeGhost,
     _removeGhosts: FootstepsOfOtari._removeGhosts,
     _openFootstepsController: FootstepsOfOtari._openFootstepsController,
+    _playToggle: FootstepsOfOtari._playToggle,
   }
   // now that we've created our API, inform other modules we are ready
   // provide a reference to the module api as the hook arguments for good measure
@@ -155,6 +158,7 @@ Hooks.once('socketlib.ready', () => {
   socket.register('_removeGhosts', removeGhosts)
   socket.register('_ghostSocketUpdate', ghostSocketUpdate)
   socket.register('_openFootstepsController', openFootstepsController)
+  socket.register('_playToggle', playToggle)
 })
 
 //////////////////////////
@@ -188,6 +192,8 @@ function doTheThing(whatLevel) {
   })
   ghostTimeline.add(ghostAnimation)
   ghostTimeline.play(0)
+  //ghostTimeline.pause(0)
+  // isPlaying = true
 }
 
 async function makeGhost() {
@@ -315,13 +321,6 @@ async function makeGhost() {
   //add to background
   ghostContainer.addChild(ghostNull)
   canvas.background.addChild(ghostContainer)
-
-  //old way to open dialog
-  /*
-  if (game.user.isGM) {
-    ghostApplication.render(true)
-  }
-  */
 }
 
 async function removeGhosts() {
@@ -339,6 +338,21 @@ async function openFootstepsController() {
   ghostApplication.render(true)
 }
 
+function playToggle(togglePlaying) {
+  isPlaying = togglePlaying
+  console.log('togglePlaying ' + togglePlaying)
+  console.log('main isPlaying' + isPlaying)
+
+  if (isPlaying === true) {
+    console.log('play')
+    ghostTimeline.play()
+  }
+
+  if (isPlaying === false) {
+    console.log('pause')
+    ghostTimeline.pause()
+  }
+}
 ///////////////////////////////
 //    INTERNAL FUNCTIONS     //
 ///////////////////////////////
@@ -407,11 +421,9 @@ async function createGhostLight() {
 async function ghostSocketUpdate() {
   //socket function run on GM to update embedded document/placable show progress etc
   if (game.user.isGM) {
-    // console.log('ghostTimeline.totalProgress' + ghostTimeline.totalProgress())
-    // if (ghostUpdateRate++ > 30) {
-    ghostApplication.exampleOption = ghostTimeline.totalProgress()
+    //console.log('gmUpdate')
     ghostApplication.totalProgress = ghostTimeline.totalProgress()
-    ghostApplication.render(true)
+    ghostApplication.updateTimeline()
     //ghostApplication._updateObject
     // ghostUpdateRate = 0
     // }
@@ -426,9 +438,10 @@ async function ghostSocketUpdate() {
 
 async function ghostUpdater() {
   //animation update function
-  if (ghostUpdateRate++ > 30) {
+  //console.log('gsapUpdate')
+  if (ghostUpdateCount++ > ghostUpdateRate) {
     socket.executeAsGM(ghostSocketUpdate)
-    ghostUpdateRate = 0
+    ghostUpdateCount = 0
   }
   // send socket to GM
 }
