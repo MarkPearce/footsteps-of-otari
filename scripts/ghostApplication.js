@@ -28,15 +28,11 @@ export class GhostApplication extends FormApplication {
     })
   }
 
-  updateTimeline() {
-    this.timelineSlider.val(this.totalProgress * 100)
-  }
-
   getData() {
     // Send data to the template
-    //return {
-    // progressBar: this.totalProgress * 100,
-    // }
+    return {
+      progressBar: this.totalProgress * 100,
+    }
   }
 
   async _updateObject(event, formData) {
@@ -73,6 +69,11 @@ export class GhostApplication extends FormApplication {
     html
       .find('.footsteps-of-otari-playControl')
       .click((event) => this.buttonPlayToggle(event))
+    //create button
+    html
+      .find('.footsteps-of-otari-create')
+      .click((event) => this.buttonCreate(event))
+
     //remove button
     html
       .find('.footsteps-of-otari-erase')
@@ -129,6 +130,10 @@ export class GhostApplication extends FormApplication {
     game.modules.get('footsteps-of-otari')?.api?._removeGhosts()
   }
 
+  buttonCreate(event) {
+    game.modules.get('footsteps-of-otari')?.api?._makeGhost()
+  }
+
   selectSpeed(event) {
     this.playbackSpeed = Number(event.currentTarget.value)
     game.modules
@@ -141,13 +146,19 @@ export class GhostApplication extends FormApplication {
   //////////////////////////////
 
   setToggleButton(isPlaying) {
+    console.log('setToggleButton ' + isPlaying)
     if (isPlaying == true) {
       this.playIcon.css('display', 'none')
       this.pauseIcon.css('display', 'block')
     } else {
+      console.log('why you broken')
       this.playIcon.css('display', 'block')
       this.pauseIcon.css('display', 'none')
     }
+  }
+
+  updateTimeline() {
+    this.timelineSlider.val(this.totalProgress * 100)
   }
 }
 

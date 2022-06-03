@@ -2,8 +2,8 @@
     width: 480px;
     padding-right: 2em;
     padding-left: 1em;
-    padding-top: 1em;
-    padding-bottom: 1em;
+    padding-top: .5em;
+    padding-bottom: .5em;
 }
 
 .app.footsteps .map-selection-block {
@@ -66,9 +66,14 @@
     justify-content: right;
 }
 
+.app.footsteps .footsteps-of-otari-create {
+    margin-right: .5em;
+    padding-left: .5em;
+}
+
 .app.footsteps .footsteps-of-otari-erase {
-    width: 120px;
-    margin-top: .5em;
+    padding-right: .5em;
+    margin-left: .5em;
 }
 
 .app.footsteps .fa-pause {

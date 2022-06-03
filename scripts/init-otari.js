@@ -17,7 +17,6 @@ let ghostUpdateRate = 10 //counter for the number of greensock updates events be
 let ghostUpdateCount = 0
 
 let isPlaying = false
-let isPausedforSlider = false
 let playbackSpeed = 1
 let mapVersion = 'remaster'
 let mapLevel = 'two'
@@ -50,15 +49,23 @@ let now // timer
 let ghostPath
 
 ////// Remaster Maps ///////
-let levelTwo =
+let narchy_levelTwo =
   'M5266.7,3306.7c62.2,78.9,66.6,188.3,58.7,235.2c-8.8,52.4-7.5,118.5-169.5,103.5s-283.1-27.7-435,0 c-304.5,55.5-348,24-484.5,33s-81,134.3-152.1,140c-50.6,4-159.7,38.2-229.6,1.7c-35.9-18.8,21-139.8-64-146.7 c-36.6-2.9,5.7,121.7-27.2,202.7c-29.2,72-66.6,115.1-124.5,97.5c-28-8.5-16.9-141-49.5-154.5c-51.7-21.4-134,25.1-184.5-66 c-69-124.5,347.5-105,327-19.5c-38.6,160.5-255,325.1-304.5,219c-63-135-184.4-127.6-201.9-129c-108-9-138.9,18.3-157.2,101.9 c-23.8,108.5,12.2,153-11.8,186c-21.7,29.8-97.9,35.3-123.2-6c-19.7-32.2-21.3-214.7-12-265.3'
 
-let levelThree =
+let narchy_levelThree =
   'M2370,6243c-108,0-168,18-189-66s-18-291,0-345s120,7.5,162-141c21.7-76.9,57-63,159-63s327,13.5,373.5-12 s57-97.5,57-157.5s8.1-113.8-4.5-96c-18,25.5-19.5,102-10.5,145.5s-7.5,105,61.5,120s235.5,4.5,366,7.5s244.3,20.5,305.7-76.8 c59.1-93.8,114.7-192,133.3-512c11.7-201-91.3-299.8,34.7-385.3S4254,4551,4446,4575s58.9,223.2,242,289 c59.3,21.3,189.3,25.3,362.7,4c104.5-12.9,260,4.9,393.3,10.7c189.3,8.2,349.1,8.5,386.7,2.7c149.9-23.4,70.1-240.5,141.3-294.7 c25.3-19.3,213.3-19.3,238,24.3c35,61.9,14.4,329.2,6,372'
 
-let levelFour =
+let narchy_levelFour =
   'M6034.5,5625c-127.5,4.5-249-18-363-1.5s-258,39-321-15s-33-292.5-66-358.5s-55.5,40.5-112.5,3 s-171,25.5-145.5,81s154.5,72,187.5,121.5s-126.4,19.7-156,49.5c-31.3,31.5,97.5,112.5,46.5,123s-228.9-89.1-247.5-106.5 c-36.5-34.1-127.3,26.4-139.5,100.5c-12.1,73.7-145.5,72-157.5,118.5s-67.5,378-42,528s-55.5,325.5-81,439.5 c-20.4,91.1,39,274.5,27,429s43.5,304.5,82.5,342s207,126,307.5,105s228-43.5,370.5,19.5S5525,7584,5525,7584'
 
+let paizo_levelTwo =
+  'M3511.1,2204.4c41.5,52.6,44.4,125.5,39.2,156.8c-5.9,35-5,79-113,69c-108-10-188.7-18.5-290,0 c-203,37-232,16-323,22s-54,89.6-101.4,93.3c-33.7,2.7-106.5,25.5-153.1,1.1c-23.9-12.5,14-93.2-42.7-97.8 c-24.4-2,3.8,81.1-18.1,135.1c-19.5,48-44.4,76.8-83,65c-18.7-5.7-11.3-94-33-103c-34.4-14.3-89.3,16.8-123-44 c-46-83,231.7-70,218-13c-25.7,107-170,216.7-203,146c-42-90-122.9-85-134.6-86c-72-6-92.6,12.2-104.8,67.9 c-15.8,72.3,8.1,102-7.9,124c-14.5,19.9-65.2,23.5-82.1-4c-13.1-21.4-14.2-143.1-8-176.9'
+
+let paizo_levelThree =
+  'M1580,4162c-72,0-112,12-126-44c-14-56-12-194,0-230c12-36,80,5,108-94c14.5-51.2,38-42,106-42 c68,0,218,9,249-8c31-17,38-65,38-105s5.4-75.9-3-64c-12,17-13,68-7,97c6,29-5,70,41,80c46,10,157,3,244,5 c87,2,162.9,13.7,203.8-51.2c39.4-62.5,76.4-128,88.9-341.3c7.8-134-60.9-199.9,23.1-256.9c84-57,290.2-73.6,418.2-57.6 c128,16,39.3,148.8,161.3,192.7c39.6,14.2,126.2,16.9,241.8,2.7c69.7-8.6,173.4,3.3,262.2,7.1c126.2,5.5,232.7,5.7,257.8,1.8 c99.9-15.6,46.8-160.3,94.2-196.4c16.9-12.9,142.2-12.9,158.7,16.2c23.3,41.2,9.6,219.5,4,248'
+
+let paizo_levelFour =
+  'M4023,3750c-85,3-166-12-242-1c-76,11-172,26-214-10c-42-36-22-195-44-239c-22-44-37,27-75,2 c-38-25-114,17-97,54c17,37,103,48,125,81s-84.2,13.1-104,33c-20.8,21,65,75,31,82s-152.6-59.4-165-71c-24.3-22.8-84.9,17.6-93,67 c-8.1,49.2-97,48-105,79s-45,252-28,352c17,100-37,217-54,293c-13.6,60.7,26,183,18,286s29,203,55,228c26,25,138,84,205,70 c67-14,152-29,247,13c95,42,200.3-13,200.3-13'
 /////////////////////////////
 //    API DEFININITION     //
 /////////////////////////////
@@ -77,7 +84,7 @@ class FootstepsOfOtari {
   }
 
   static _removeGhosts() {
-    socket.executeForEveryone(removeGhosts)
+    socket.executeForEveryone(removeGhost)
   }
 
   static _openFootstepsController() {
@@ -139,7 +146,7 @@ Hooks.on('init', function () {
 
 Hooks.on('canvasInit', async () => {
   //get rid of clients ghost when changing scene!
-  removeGhosts()
+  removeGhost()
 })
 
 Hooks.on('closeGhostApplication', async () => {
@@ -160,7 +167,7 @@ Hooks.once('socketlib.ready', () => {
   /// ('external name from static above', function in api below)
   socket.register('_doTheThing', doTheThing)
   socket.register('_makeGhost', makeGhost)
-  socket.register('_removeGhosts', removeGhosts)
+  socket.register('_removeGhosts', removeGhost)
   socket.register('_ghostSocketUpdate', ghostSocketUpdate)
   socket.register('_openFootstepsController', openFootstepsController)
   socket.register('_playToggle', playToggle)
@@ -180,20 +187,68 @@ function doTheThing(whatLevel) {
   let pathDuration
 
   if (whatLevel == 'two') {
-    ghostPath = levelTwo
+    ghostPath = narchy_levelTwo
     pathDuration = 36
   }
 
   if (whatLevel == 'three') {
-    ghostPath = levelThree
+    ghostPath = narchy_levelThree
     pathDuration = 66
   }
 
   if (whatLevel == 'four') {
-    ghostPath = levelFour
+    ghostPath = narchy_levelFour
     pathDuration = 48
   }
 
+  //let ghostParts = [ghostNull, ghostLight] //maybe a light will work?
+  let ghostParts = [ghostNull]
+  ghostTimeline.clear()
+  let ghostAnimation = gsap.to(ghostParts, {
+    motionPath: { path: ghostPath, autoRotate: 90 },
+    duration: pathDuration,
+    ease: 'none',
+  })
+  ghostTimeline.add(ghostAnimation)
+  ghostTimeline.seek(0.01)
+}
+
+function assignPath() {
+  let pathDuration
+  console.log('assign mapversion ' + mapVersion)
+  console.log('assign mapLevel ' + mapLevel)
+  if (mapVersion == 'remaster') {
+    if (mapLevel == 'two') {
+      ghostPath = narchy_levelTwo
+      pathDuration = 36
+    }
+
+    if (mapLevel == 'three') {
+      ghostPath = narchy_levelThree
+      pathDuration = 66
+    }
+
+    if (mapLevel == 'four') {
+      ghostPath = narchy_levelFour
+      pathDuration = 48
+    }
+  } else {
+    if (mapLevel == 'two') {
+      ghostPath = paizo_levelTwo
+      pathDuration = 36
+    }
+
+    if (mapLevel == 'three') {
+      ghostPath = paizo_levelThree
+      pathDuration = 66
+    }
+
+    if (mapLevel == 'four') {
+      ghostPath = paizo_levelFour
+      pathDuration = 48
+    }
+  }
+  ghostTimeline.clear()
   //let ghostParts = [ghostNull, ghostLight] //maybe a light will work?
   let ghostParts = [ghostNull]
   let ghostAnimation = gsap.to(ghostParts, {
@@ -203,13 +258,16 @@ function doTheThing(whatLevel) {
   })
   ghostTimeline.add(ghostAnimation)
   ghostTimeline.seek(0.01)
-  ///ghostTimeline.play(0)
-  //ghostTimeline.pause(0)
-  // isPlaying = true
+  ghostApplication.totalProgress = ghostTimeline.totalProgress()
+  ghostApplication.updateTimeline()
 }
 
 async function makeGhost() {
   //ghost sprite
+
+  let wtf = [ghostExists, ghostNull, ghostTimeline, mapLevel, mapVersion]
+  console.log('mapVersion ' + mapVersion)
+  console.dir(wtf)
   const ghostTexture = await loadTexture(
     'modules/footsteps-of-otari/artwork/ghost-blob.webp',
   )
@@ -333,6 +391,9 @@ async function makeGhost() {
   //add to background
   ghostContainer.addChild(ghostNull)
   canvas.background.addChild(ghostContainer)
+  ghostExists = true
+
+  assignPath()
 }
 
 /////////////////////////////////////
@@ -344,8 +405,8 @@ async function openFootstepsController() {
   ghostApplication.render(true)
 }
 
-async function removeGhosts() {
-  console.log('remove ghosts')
+async function removeGhost() {
+  console.log('remove ghost')
   canvas.app.ticker.remove(updateLoop)
   canvas.background.removeChild(ghostContainer)
   ghostContainer.removeChild(ghostNull)
@@ -355,15 +416,24 @@ async function removeGhosts() {
   //reset defaults
   ghostExists = false
   isPlaying = false
-  isPausedforSlider = false
+  ghostTimeline.pause()
+  //clean up controller
+  if (game.user.isGM) {
+    ghostApplication.totalProgress = ghostTimeline.totalProgress()
+    ghostApplication.updateTimeline()
+    ghostApplication.setToggleButton(isPlaying)
+  }
 }
 
-function playToggle() {
+async function playToggle() {
   console.log('togglePlay')
+  if (ghostExists == false) {
+    await makeGhost()
+  }
   if (isPlaying) {
     ghostTimeline.pause()
   } else {
-    ghostTimeline.play()
+    ghostTimeline.timeScale(playbackSpeed).play()
   }
   isPlaying = !isPlaying
   if (game.user.isGM) {
@@ -372,11 +442,14 @@ function playToggle() {
 }
 
 function selectMapVersion(whatversion) {
-  console.log('version = ' + whatversion)
+  mapVersion = whatversion
+
+  assignPath()
 }
 
 function selectMapLevel(whatLevel) {
-  console.log('version = ' + whatLevel)
+  mapLevel = whatLevel
+  assignPath()
 }
 
 function setPlaybackSpeed(whatSpeed) {
@@ -385,19 +458,18 @@ function setPlaybackSpeed(whatSpeed) {
 }
 
 function mousedownGhostSlider() {
-  isPausedforSlider = true
   ghostTimeline.pause()
 }
 
 function dragGhostSlider(whatPercent) {
-  console.log('setdrag' + whatPercent)
   ghostTimeline.progress(whatPercent)
 }
 
 function changeGhostSlider(whatPercent) {
-  console.log('setCHange' + whatPercent)
+  if (ghostExists == false) {
+    makeGhost()
+  }
   ghostTimeline.progress(whatPercent)
-  isPausedforSlider = false
   if (isPlaying) {
     ghostTimeline.play()
   }
@@ -495,3 +567,12 @@ async function ghostUpdater() {
   }
   // send socket to GM
 }
+
+/// sceneIDs
+//Remaster Level 2: BDb75TAOyhTzNzte
+//Remaster Level 3: N4Gsv8cBg1oK6EGS
+//Remaster Level 4: Y4pI9rvbaVvmK2kn
+
+//classic Level 2: TE8aNKdE5NKGSgoV
+//classic Level 3: l9piQKpfF80Tf4Ee
+//classic Level 4: D3ZsHuxFbD9XJ8xm
