@@ -93,7 +93,7 @@ class FootstepsOfOtari {
     socket.executeForEveryone(selectMapLayer)
   }
 
-  static _playToggle(is) {
+  static _playToggle() {
     socket.executeForEveryone(playToggle)
   }
 
@@ -134,12 +134,14 @@ Hooks.on('init', function () {
 
 Hooks.on('canvasInit', async () => {
   //get rid of all ghosts
+  console.log('clean scene')
   removeGhosts()
 })
 
 Hooks.on('closeGhostApplication', async () => {
   //get rid of all ghosts
-  removeGhosts()
+  game.modules.get('footsteps-of-otari')?.api?._removeGhosts()
+  // removeGhosts()
 })
 
 Hooks.once('ready', async () => {
@@ -340,17 +342,16 @@ async function openFootstepsController() {
 }
 
 function playToggle() {
-  console.log('main isPlaying ' + isPlaying)
-
+  console.log('togglePlay')
   if (isPlaying) {
-    console.log('pause')
     ghostTimeline.pause()
   } else {
-    console.log('play')
     ghostTimeline.play()
   }
   isPlaying = !isPlaying
-  ghostApplication.setToggleButton(isPlaying)
+  if (game.user.isGM) {
+    ghostApplication.setToggleButton(isPlaying)
+  }
 }
 ///////////////////////////////
 //    INTERNAL FUNCTIONS     //

@@ -31,7 +31,6 @@ export class GhostApplication extends FormApplication {
   }
 
   updateTimeline() {
-    console.log('whaha')
     this.timelineSlider.val(this.totalProgress * 100)
   }
 
@@ -82,7 +81,6 @@ export class GhostApplication extends FormApplication {
   }
 
   playToggle(event) {
-    console.log('playToggle')
     game.modules.get('footsteps-of-otari')?.api?._playToggle()
   }
 
