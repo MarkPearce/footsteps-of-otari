@@ -34,9 +34,9 @@ export class GhostApplication extends FormApplication {
 
   getData() {
     // Send data to the template
-    return {
-      progressBar: this.totalProgress * 100,
-    }
+    //return {
+    // progressBar: this.totalProgress * 100,
+    // }
   }
 
   async _updateObject(event, formData) {
@@ -89,17 +89,24 @@ export class GhostApplication extends FormApplication {
 
   dragGhostSlider(event) {
     //not called by onInput
-    console.log('dragSlider' + event.currentTarget.value)
+    this.totalProgress = event.currentTarget.value / 100
+    console.log('dragSlider' + this.totalProgress)
+    game.modules
+      .get('footsteps-of-otari')
+      ?.api?._dragGhostSlider(this.totalProgress)
   }
 
   mousedownGhostSlider(event) {
-    console.log('mousedown')
-    console.dir(event)
+    console.log('mousedown slider')
+    game.modules.get('footsteps-of-otari')?.api?._mousedownGhostSlider()
   }
 
   changeGhostSlider(event) {
-    console.log('change slider')
-    console.dir(event)
+    this.totalProgress = event.currentTarget.value / 100
+    console.log('release slider' + this.totalProgress)
+    game.modules
+      .get('footsteps-of-otari')
+      ?.api?._changeGhostSlider(this.totalProgress)
   }
 
   buttonPlayToggle(event) {

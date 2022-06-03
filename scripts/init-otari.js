@@ -100,12 +100,12 @@ class FootstepsOfOtari {
     socket.executeForEveryone(mousedownGhostSlider)
   }
 
-  static _changeGhostSlider() {
-    socket.executeForEveryone(changeGhostSlider)
+  static _dragGhostSlider(whatPercent) {
+    socket.executeForEveryone(dragGhostSlider, [whatPercent])
   }
 
-  static _dragGhostSlider() {
-    socket.executeForEveryone(dragGhostSlider)
+  static _changeGhostSlider(whatPercent) {
+    socket.executeForEveryone(changeGhostSlider, [whatPercent])
   }
 
   static _setPlaybackSpeed(whatSpeed) {
@@ -128,6 +128,9 @@ Hooks.on('init', function () {
     _selectMapVersion: FootstepsOfOtari._selectMapVersion,
     _selectMapLevel: FootstepsOfOtari._selectMapLevel,
     _setPlaybackSpeed: FootstepsOfOtari._setPlaybackSpeed,
+    _mousedownGhostSlider: FootstepsOfOtari._mousedownGhostSlider,
+    _dragGhostSlider: FootstepsOfOtari._dragGhostSlider,
+    _changeGhostSlider: FootstepsOfOtari._changeGhostSlider,
   }
   // now that we've created our API, inform other modules we are ready
   // provide a reference to the module api as the hook arguments for good measure
@@ -164,6 +167,9 @@ Hooks.once('socketlib.ready', () => {
   socket.register('_selectMapVersion', selectMapVersion)
   socket.register('_selectMapLevel', selectMapLevel)
   socket.register('_setPlaybackSpeed', setPlaybackSpeed)
+  socket.register('_mousedownGhostSlider', mousedownGhostSlider)
+  socket.register('_dragGhostSlider', dragGhostSlider)
+  socket.register('_changeGhostSlider', changeGhostSlider)
 })
 
 //////////////////////////
@@ -374,9 +380,27 @@ function selectMapLevel(whatLevel) {
 }
 
 function setPlaybackSpeed(whatSpeed) {
-  console.log('setPlaybackSpeed ' + whatSpeed)
   playbackSpeed = whatSpeed
   ghostTimeline.timeScale(playbackSpeed).play()
+}
+
+function mousedownGhostSlider() {
+  isPausedforSlider = true
+  ghostTimeline.pause()
+}
+
+function dragGhostSlider(whatPercent) {
+  console.log('setdrag' + whatPercent)
+  ghostTimeline.progress(whatPercent)
+}
+
+function changeGhostSlider(whatPercent) {
+  console.log('setCHange' + whatPercent)
+  ghostTimeline.progress(whatPercent)
+  isPausedforSlider = false
+  if (isPlaying) {
+    ghostTimeline.play()
+  }
 }
 
 ///////////////////////////////
