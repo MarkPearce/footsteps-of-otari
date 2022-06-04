@@ -26,6 +26,8 @@ Use play/pause/speed control on the animation, or scrubb with the timeline
 
 ![ghostly control](https://imgur.com/yKPTt1j.gif)
 
+![control ui](https://imgur.com/lcCrqf1.png)
+
 **NPC Map Journals**
 Journal Handouts for maps that can be provided by NPCs
 
