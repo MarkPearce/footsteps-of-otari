@@ -24,7 +24,7 @@ To use: Add the Macro "Open Footsteps Control" from the Footsteps of Otari Macro
 Click on it to open the floating control window. If you havent modified the MapIDs it will auto-detect the path to play.
 Use play/pause/speed control on the animation, or scrubb with the timeline
 
-![ghostly control](https://i.imgur.com/0HckCh5.gif)
+![ghostly control](https://imgur.com/0HckCh5)
 
 **NPC Map Journals**
 Journal Handouts for maps that can be provided by NPCs
