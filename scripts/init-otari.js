@@ -34,7 +34,7 @@ let ghostApplication = new GhostApplication(
 ///  Ghost animation and PIXI stuff   //
 ////////////////////////////////////////
 
-let ghostTimeline = gsap.timeline({ onUpdate: ghostUpdater, paused: true }) //TODO progress and animate placable
+let ghostTimeline = gsap.timeline({ onUpdate: ghostUpdater, paused: true }) // animate placable object(light)
 //let ghostTimeline = gsap.timeline({ paused: true })
 
 let ghostContainer = new PIXI.Container()
@@ -73,13 +73,7 @@ let paizo_levelFour =
 class FootstepsOfOtari {
   //API Functions below : must be registered with API and SOCKET
 
-  static _doTheThing(argument) {
-    // does stuff you want other modules to have access to
-    socket.executeForEveryone(doTheThing, [argument])
-  }
-
   static _makeGhost() {
-    console.log('make a ghost')
     socket.executeForEveryone(makeGhost)
   }
 
@@ -118,6 +112,14 @@ class FootstepsOfOtari {
   static _setPlaybackSpeed(whatSpeed) {
     socket.executeForEveryone(setPlaybackSpeed, [whatSpeed])
   }
+
+  static _updatePathSelection(whatVersion, whatLevel, whatProgress) {
+    socket.executeForEveryone(updatePathSelection, [
+      whatVersion,
+      whatLevel,
+      whatProgress,
+    ])
+  }
 }
 
 /////////////////////////////////
@@ -127,7 +129,6 @@ class FootstepsOfOtari {
 Hooks.on('init', function () {
   // once set up, we create our API object. Each function needs an entry
   game.modules.get('footsteps-of-otari').api = {
-    _doTheThing: FootstepsOfOtari._doTheThing,
     _makeGhost: FootstepsOfOtari._makeGhost,
     _removeGhosts: FootstepsOfOtari._removeGhosts,
     _openFootstepsController: FootstepsOfOtari._openFootstepsController,
@@ -138,6 +139,7 @@ Hooks.on('init', function () {
     _mousedownGhostSlider: FootstepsOfOtari._mousedownGhostSlider,
     _dragGhostSlider: FootstepsOfOtari._dragGhostSlider,
     _changeGhostSlider: FootstepsOfOtari._changeGhostSlider,
+    _updatePathSelection: FootstepsOfOtari._updatePathSelection,
   }
   // now that we've created our API, inform other modules we are ready
   // provide a reference to the module api as the hook arguments for good measure
@@ -145,8 +147,10 @@ Hooks.on('init', function () {
 })
 
 Hooks.on('canvasInit', async () => {
-  //get rid of clients ghost when changing scene!
+  //get rid of clients ghost when changing scene! (or crash pixi)
   removeGhost()
+  //close application if open
+  ghostApplication.close()
 })
 
 Hooks.on('closeGhostApplication', async () => {
@@ -164,8 +168,7 @@ Hooks.once('socketlib.ready', () => {
   //register module
   socket = socketlib.registerModule('footsteps-of-otari')
   //register socket functions
-  /// ('external name from static above', function in api below)
-  socket.register('_doTheThing', doTheThing)
+  /// map the external names of statics above to the API functions below
   socket.register('_makeGhost', makeGhost)
   socket.register('_removeGhosts', removeGhost)
   socket.register('_ghostSocketUpdate', ghostSocketUpdate)
@@ -177,46 +180,16 @@ Hooks.once('socketlib.ready', () => {
   socket.register('_mousedownGhostSlider', mousedownGhostSlider)
   socket.register('_dragGhostSlider', dragGhostSlider)
   socket.register('_changeGhostSlider', changeGhostSlider)
+  socket.register('_updatePathSelection', updatePathSelection)
 })
 
 //////////////////////////
 //    API FUNCTIONS     //
 //////////////////////////
 
-function doTheThing(whatLevel) {
-  let pathDuration
-
-  if (whatLevel == 'two') {
-    ghostPath = narchy_levelTwo
-    pathDuration = 36
-  }
-
-  if (whatLevel == 'three') {
-    ghostPath = narchy_levelThree
-    pathDuration = 66
-  }
-
-  if (whatLevel == 'four') {
-    ghostPath = narchy_levelFour
-    pathDuration = 48
-  }
-
-  //let ghostParts = [ghostNull, ghostLight] //maybe a light will work?
-  let ghostParts = [ghostNull]
-  ghostTimeline.clear()
-  let ghostAnimation = gsap.to(ghostParts, {
-    motionPath: { path: ghostPath, autoRotate: 90 },
-    duration: pathDuration,
-    ease: 'none',
-  })
-  ghostTimeline.add(ghostAnimation)
-  ghostTimeline.seek(0.01)
-}
-
 function assignPath() {
+  console.log('assignPath ' + game.user.id)
   let pathDuration
-  console.log('assign mapversion ' + mapVersion)
-  console.log('assign mapLevel ' + mapLevel)
   if (mapVersion == 'remaster') {
     if (mapLevel == 'two') {
       ghostPath = narchy_levelTwo
@@ -258,142 +231,143 @@ function assignPath() {
   })
   ghostTimeline.add(ghostAnimation)
   ghostTimeline.seek(0.01)
-  ghostApplication.totalProgress = ghostTimeline.totalProgress()
-  ghostApplication.updateTimeline()
+  if (game.user.isGM) {
+    ghostApplication.totalProgress = ghostTimeline.progress()
+    ghostApplication.updateTimeline()
+  }
 }
 
 async function makeGhost() {
   //ghost sprite
 
-  let wtf = [ghostExists, ghostNull, ghostTimeline, mapLevel, mapVersion]
-  console.log('mapVersion ' + mapVersion)
-  console.dir(wtf)
-  const ghostTexture = await loadTexture(
-    'modules/footsteps-of-otari/artwork/ghost-blob.webp',
-  )
-  ghost = new PIXI.Sprite(ghostTexture)
-  ghost.name = 'otariOne'
-  ghost.anchor.set(0.5)
-  ghost.x = 0
-  ghost.y = 0
-  ghost.blendMode = PIXI.BLEND_MODES.ADD
-  ghost.width = 48
-  ghost.height = 48
-  ghostNull.addChild(ghost)
+  if (ghostExists == false) {
+    const ghostTexture = await loadTexture(
+      'modules/footsteps-of-otari/artwork/ghost-blob.webp',
+    )
+    ghost = new PIXI.Sprite(ghostTexture)
+    ghost.name = 'otariOne'
+    ghost.anchor.set(0.5)
+    ghost.x = 0
+    ghost.y = 0
+    ghost.blendMode = PIXI.BLEND_MODES.ADD
+    ghost.width = 48
+    ghost.height = 48
+    ghostNull.addChild(ghost)
 
-  now = Date.now()
+    now = Date.now()
 
-  // Ghost Aura Particles
-  ghostEmitter = new PIXI.particles.Emitter(
-    // The PIXI.Container to put the emitter in
-    ghostContainer,
-    // The collection of particle images to use
-    [ghostTexture],
-    // Emitter configuration
-    {
-      alpha: { start: 0.8, end: 0 },
-      scale: { start: 0.5, end: 0.1, minimumScaleMultiplier: 1 },
-      color: { start: '#4af095', end: '#169e0c' },
-      speed: { start: 0, end: 0, minimumSpeedMultiplier: 1 },
-      acceleration: { x: 0, y: 0 },
-      maxSpeed: 20,
-      startRotation: { min: 0, max: 0 },
-      noRotation: false,
-      rotationSpeed: { min: 0, max: 0 },
-      lifetime: { min: 0.8, max: 2.1 },
-      blendMode: 'add',
-      frequency: 0.01,
-      emitterLifetime: -1,
-      maxParticles: 500,
-      pos: { x: 0, y: 0 },
-      addAtBack: true,
-      spawnType: 'point',
-    },
-  )
+    // Ghost Aura Particles
+    ghostEmitter = new PIXI.particles.Emitter(
+      // The PIXI.Container to put the emitter in
+      ghostContainer,
+      // The collection of particle images to use
+      [ghostTexture],
+      // Emitter configuration
+      {
+        alpha: { start: 0.8, end: 0 },
+        scale: { start: 0.5, end: 0.1, minimumScaleMultiplier: 1 },
+        color: { start: '#4af095', end: '#169e0c' },
+        speed: { start: 0, end: 0, minimumSpeedMultiplier: 1 },
+        acceleration: { x: 0, y: 0 },
+        maxSpeed: 20,
+        startRotation: { min: 0, max: 0 },
+        noRotation: false,
+        rotationSpeed: { min: 0, max: 0 },
+        lifetime: { min: 0.8, max: 2.1 },
+        blendMode: 'add',
+        frequency: 0.01,
+        emitterLifetime: -1,
+        maxParticles: 500,
+        pos: { x: 0, y: 0 },
+        addAtBack: true,
+        spawnType: 'point',
+      },
+    )
 
-  ghostEmitter.emit = true
+    ghostEmitter.emit = true
 
-  // Left Footstep Particles
-  const leftFoot = await loadTexture(
-    'modules/footsteps-of-otari/artwork/ghost-left.webp',
-  )
+    // Left Footstep Particles
+    const leftFoot = await loadTexture(
+      'modules/footsteps-of-otari/artwork/ghost-left.webp',
+    )
 
-  leftPrintEmitter = new PIXI.particles.Emitter(
-    // The PIXI.Container to put the emitter in
-    ghostContainer,
-    // The collection of particle images
-    [leftFoot],
-    // Emitter configuration
-    {
-      alpha: { start: 1, end: 0 },
-      scale: { start: 0.5, end: 0.1, minimumScaleMultiplier: 1 },
-      color: { start: '#4af095', end: '#169e0c' },
-      speed: { start: 0.01, end: 0, minimumSpeedMultiplier: 0 },
-      acceleration: { x: 0, y: 0 },
-      maxSpeed: 0.01,
-      startRotation: { min: 0, max: 0 },
-      noRotation: false,
-      rotationSpeed: { min: 0, max: 0 },
-      lifetime: { min: 20, max: 22 },
-      blendMode: 'add',
-      frequency: stepFrequency,
-      emitterLifetime: -1,
-      maxParticles: 100,
-      pos: { x: 6, y: 0 },
-      addAtBack: true,
-      spawnType: 'point',
-    },
-  )
+    leftPrintEmitter = new PIXI.particles.Emitter(
+      // The PIXI.Container to put the emitter in
+      ghostContainer,
+      // The collection of particle images
+      [leftFoot],
+      // Emitter configuration
+      {
+        alpha: { start: 1, end: 0 },
+        scale: { start: 0.5, end: 0.1, minimumScaleMultiplier: 1 },
+        color: { start: '#4af095', end: '#169e0c' },
+        speed: { start: 0.01, end: 0, minimumSpeedMultiplier: 0 },
+        acceleration: { x: 0, y: 0 },
+        maxSpeed: 0.01,
+        startRotation: { min: 0, max: 0 },
+        noRotation: false,
+        rotationSpeed: { min: 0, max: 0 },
+        lifetime: { min: 20, max: 22 },
+        blendMode: 'add',
+        frequency: stepFrequency,
+        emitterLifetime: -1,
+        maxParticles: 100,
+        pos: { x: 6, y: 0 },
+        addAtBack: true,
+        spawnType: 'point',
+      },
+    )
 
-  leftPrintEmitter.emit = true
+    leftPrintEmitter.emit = true
 
-  // Right Footstep Particles
-  const rightFoot = await loadTexture(
-    'modules/footsteps-of-otari/artwork/ghost-right.webp',
-  )
+    // Right Footstep Particles
+    const rightFoot = await loadTexture(
+      'modules/footsteps-of-otari/artwork/ghost-right.webp',
+    )
 
-  rightPrintEmitter = new PIXI.particles.Emitter(
-    // The PIXI.Container to put the emitter in
-    ghostContainer,
-    // The collection of particle images to use
-    [rightFoot],
-    // Emitter configuration
-    {
-      alpha: { start: 1, end: 0 },
-      scale: { start: 0.5, end: 0.1, minimumScaleMultiplier: 1 },
-      color: { start: '#4af095', end: '#169e0c' },
-      speed: { start: 0.01, end: 0, minimumSpeedMultiplier: 0 },
-      acceleration: { x: 0, y: 0 },
-      maxSpeed: 0.1,
-      startRotation: { min: 0, max: 0 },
-      noRotation: false,
-      rotationSpeed: { min: 0, max: 0 },
-      lifetime: { min: 20, max: 22 },
-      blendMode: 'add',
-      frequency: stepFrequency,
-      emitterLifetime: -1,
-      maxParticles: 100,
-      pos: { x: 26, y: 0 },
-      addAtBack: true,
-      spawnType: 'point',
-    },
-  )
+    rightPrintEmitter = new PIXI.particles.Emitter(
+      // The PIXI.Container to put the emitter in
+      ghostContainer,
+      // The collection of particle images to use
+      [rightFoot],
+      // Emitter configuration
+      {
+        alpha: { start: 1, end: 0 },
+        scale: { start: 0.5, end: 0.1, minimumScaleMultiplier: 1 },
+        color: { start: '#4af095', end: '#169e0c' },
+        speed: { start: 0.01, end: 0, minimumSpeedMultiplier: 0 },
+        acceleration: { x: 0, y: 0 },
+        maxSpeed: 0.1,
+        startRotation: { min: 0, max: 0 },
+        noRotation: false,
+        rotationSpeed: { min: 0, max: 0 },
+        lifetime: { min: 20, max: 22 },
+        blendMode: 'add',
+        frequency: stepFrequency,
+        emitterLifetime: -1,
+        maxParticles: 100,
+        pos: { x: 26, y: 0 },
+        addAtBack: true,
+        spawnType: 'point',
+      },
+    )
 
-  rightPrintEmitter.emit = false
-  gsap.delayedCall(stepFrequency / 2, startRight)
-  // PIXI  updater
+    rightPrintEmitter.emit = false
+    gsap.delayedCall(stepFrequency / 2, startRight)
+    // PIXI  updater
 
-  canvas.app.ticker.add(updateLoop)
+    canvas.app.ticker.add(updateLoop)
 
-  // TODO Light Follow
-  // ghostLight = createGhostLight()
+    // TODO Light Follow
+    // ghostLight = createGhostLight()
 
-  //add to background
-  ghostContainer.addChild(ghostNull)
-  canvas.background.addChild(ghostContainer)
-  ghostExists = true
+    //add to background
+    ghostContainer.addChild(ghostNull)
+    canvas.background.addChild(ghostContainer)
+    ghostExists = true
 
-  assignPath()
+    assignPath()
+  }
 }
 
 /////////////////////////////////////
@@ -401,32 +375,77 @@ async function makeGhost() {
 /////////////////////////////////////
 
 async function openFootstepsController() {
-  console.log('open controller')
+  let activeScene = game.scenes.active.id
+
+  switch (activeScene) {
+    case 'BDb75TAOyhTzNzte':
+      mapVersion = 'remaster'
+      mapLevel = 'two'
+      break
+    case 'N4Gsv8cBg1oK6EGS':
+      mapVersion = 'remaster'
+      mapLevel = 'three'
+      break
+    case 'Y4pI9rvbaVvmK2kn':
+      mapVersion = 'remaster'
+      mapLevel = 'four'
+      break
+    case 'TE8aNKdE5NKGSgoV':
+      mapVersion = 'classic'
+      mapLevel = 'two'
+      break
+    case 'l9piQKpfF80Tf4Ee':
+      mapVersion = 'classic'
+      mapLevel = 'three'
+      break
+    case 'D3ZsHuxFbD9XJ8xm':
+      mapVersion = 'classic'
+      mapLevel = 'four'
+      break
+  }
+  //this needs to be shared to all clients.
+  ghostApplication.totalProgress = ghostTimeline.progress()
+  ghostApplication.mapVersion = mapVersion
+  ghostApplication.mapLevel = mapLevel
+  await game.modules
+    .get('footsteps-of-otari')
+    ?.api?._updatePathSelection(mapVersion, mapLevel, ghostTimeline.progress())
   ghostApplication.render(true)
 }
 
+async function updatePathSelection(args) {
+  console.log('setpath everyone')
+  console.log('whatVersion ' + args[0])
+  console.log('whatLevel ' + args[1])
+  console.log('whatProgress ' + args[2])
+
+  ghostTimeline.totalProgress = args[2]
+  mapVersion = args[0]
+  mapLevel = args[1]
+}
+
 async function removeGhost() {
-  console.log('remove ghost')
-  canvas.app.ticker.remove(updateLoop)
-  canvas.background.removeChild(ghostContainer)
-  ghostContainer.removeChild(ghostNull)
-  ghostNull = new PIXI.Container()
-  ghostContainer = new PIXI.Container()
-  ghostTimeline.clear()
-  //reset defaults
-  ghostExists = false
-  isPlaying = false
-  ghostTimeline.pause()
-  //clean up controller
-  if (game.user.isGM) {
-    ghostApplication.totalProgress = ghostTimeline.totalProgress()
-    ghostApplication.updateTimeline()
-    ghostApplication.setToggleButton(isPlaying)
+  if (ghostExists) {
+    canvas.app.ticker.remove(updateLoop)
+    canvas.background.removeChild(ghostContainer)
+    ghostContainer.removeChild(ghostNull)
+    ghostNull = new PIXI.Container()
+    ghostContainer = new PIXI.Container()
+    ghostTimeline.clear()
+    //reset defaults
+    ghostExists = false
+    isPlaying = false
+    ghostTimeline.pause()
+    //clean up controller
+    if (game.user.isGM) {
+      ghostApplication.totalProgress = ghostTimeline.progress()
+      ghostApplication.updateTimeline()
+      ghostApplication.setToggleButton(isPlaying)
+    }
   }
 }
 
 async function playToggle() {
-  console.log('togglePlay')
   if (ghostExists == false) {
     await makeGhost()
   }
@@ -443,7 +462,6 @@ async function playToggle() {
 
 function selectMapVersion(whatversion) {
   mapVersion = whatversion
-
   assignPath()
 }
 
@@ -543,8 +561,7 @@ async function createGhostLight() {
 async function ghostSocketUpdate() {
   //socket function run on GM to update embedded document/placable show progress etc
   if (game.user.isGM) {
-    //console.log('gmUpdate')
-    ghostApplication.totalProgress = ghostTimeline.totalProgress()
+    ghostApplication.totalProgress = ghostTimeline.progress()
     ghostApplication.updateTimeline()
     //ghostApplication._updateObject
     // ghostUpdateRate = 0
@@ -560,19 +577,8 @@ async function ghostSocketUpdate() {
 
 async function ghostUpdater() {
   //animation update function
-  //console.log('gsapUpdate')
   if (ghostUpdateCount++ > ghostUpdateRate) {
     socket.executeAsGM(ghostSocketUpdate)
     ghostUpdateCount = 0
   }
-  // send socket to GM
 }
-
-/// sceneIDs
-//Remaster Level 2: BDb75TAOyhTzNzte
-//Remaster Level 3: N4Gsv8cBg1oK6EGS
-//Remaster Level 4: Y4pI9rvbaVvmK2kn
-
-//classic Level 2: TE8aNKdE5NKGSgoV
-//classic Level 3: l9piQKpfF80Tf4Ee
-//classic Level 4: D3ZsHuxFbD9XJ8xm

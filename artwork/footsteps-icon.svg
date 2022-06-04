@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<svg version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
+	 viewBox="0 0 128 128" width="128" height="128" style="enable-background:new 0 0 128 128;" xml:space="preserve">
+<style type="text/css">
+	.st0{fill:#38F5AE;}
+	.st1{fill:#FFFFFF;}
+</style>
+<polygon class="st0" points="80,110 80,104 86,104 86,98 92,98 92,104 98,104 98,110 104,110 104,62 98,62 98,44 92,44 92,38 86,38 
+	86,32 80,32 74,32 74,26 50,26 50,32 38,32 38,38 32,38 32,44 26,44 26,62 20,62 20,110 26,110 26,104 32,104 32,98 38,98 38,104 
+	44,104 44,110 56,110 56,98 62,98 68,98 68,110 "/>
+<polygon class="st1" points="38,44 38,68 44,68 44,74 56,74 56,68 62,68 62,50 56,50 56,44 "/>
+<rect x="50" y="56" width="12" height="12"/>
+<polygon class="st1" points="74,44 74,68 80,68 80,74 92,74 92,68 98,68 98,50 92,50 92,44 "/>
+<rect x="86" y="56" width="12" height="12"/>
+</svg>

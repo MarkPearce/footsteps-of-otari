@@ -1,25 +1,54 @@
 {
-    "name": "footsteps-of-otari",
-    "title": "Footsteps of Otari",
-    "description": "Ghostly footprints for Abomination Vaults",
-    "author": "Mark Pearce",
-    "version": "0.0.1",
-    "minimumCoreVersion": "9.0",
-    "compatibleCoreVersion": "9.0",
-    "esmodules": [
-        "scripts/init-otari.js",
-        "greensock/esm/all.js"
-    ],
-    "styles": [
-    "scripts/footsteps.css"
+  "name": "footsteps-of-otari",
+  "title": "Footsteps of Otari",
+  "description": "Ghostly footprints and player handouts for Abomination Vaults Premium Module",
+  "authors": [{ "name": "Mark Pearce", "discord": "Mark Pearce#2772" }],
+  "version": "0.0.2",
+  "minimumCoreVersion": "9.0",
+  "compatibleCoreVersion": "9.0",
+  "esmodules": ["scripts/init-otari.js", "greensock/esm/all.js"],
+  "styles": ["scripts/footsteps.css"],
+  "packs": [
+    {
+      "name": "footsteps-of-otari-scenes",
+      "label": "Footsteps of Otari Scenes",
+      "path": "./packs/footsteps-of-otari-scenes.db",
+      "entity": "Scene",
+      "type": "Scene"
+    },
+    {
+      "name": "footsteps-of-otari-journals",
+      "label": "Footsteps of Otari Journals",
+      "path": "./packs/footsteps-of-otari-journals.db",
+      "entity": "JournalEntry",
+      "type": "JournalEntry"
+    },
+    {
+      "name": "footsteps-of-otari-macros",
+      "label": "Footsteps of Otari Macros",
+      "path": "./packs/footsteps-of-otari-macros.db",
+      "entity": "Macro",
+      "type": "Macro"
+    }
   ],
-    "packs": [
-	{
-            
-        }
-    ],
-    "socket": true,
-    "url": "https://github.com/MarkPearce/footsteps-of-otari",
-    "manifest": "https://github.com/MarkPearce/footsteps-of-otari/releases/latest/download/module.json",
-    "download": "https://github.com/MarkPearce/footsteps-of-otari/releases/download/0.0.1/footsteps-of-otari.zip"
+  "system": ["pf2e"],
+
+  "dependencies": [
+    {
+      "name": "pf2e-abomination-vaults",
+      "manifest": "https://foundryvtt.s3.us-west-2.amazonaws.com/modules/pf2e-abomination-vaults/module.json"
+    },
+    {
+      "name": "pf2e",
+      "type": "system"
+    },
+    {
+      "name": "socketlib",
+      "manifest": "https://raw.githubusercontent.com/manuelVo/foundryvtt-socketlib/master/module.json"
+    }
+  ],
+  "socket": true,
+  "url": "https://github.com/MarkPearce/footsteps-of-otari",
+  "manifest": "https://github.com/MarkPearce/footsteps-of-otari/releases/latest/download/module.json",
+  "download": "https://github.com/MarkPearce/footsteps-of-otari/releases/download/0.0.1/footsteps-of-otari.zip"
 }

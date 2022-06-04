@@ -36,7 +36,6 @@ export class GhostApplication extends FormApplication {
   }
 
   async _updateObject(event, formData) {
-    console.log(formData.exampleInput)
     //this.render() // rerenders the FormApp with the new data.
   }
 
@@ -82,6 +81,33 @@ export class GhostApplication extends FormApplication {
     html
       .find('.footsteps-of-otari-playSpeed')
       .change((event) => this.selectSpeed(event))
+
+    // set radio values based on map
+    let radioVersionClassic = html.find(
+      '.footsteps-of-otari-radioVersionClassic',
+    )
+    let radioVersionRemaster = html.find(
+      '.footsteps-of-otari-radioVersionRemaster',
+    )
+    if (this.mapVersion == 'remaster') {
+      radioVersionRemaster[0].checked = true
+    } else {
+      radioVersionClassic[0].checked = true
+    }
+
+    let radioLevelTwo = html.find('.footsteps-of-otari-radioLevelTwo')
+    let radioLevelThree = html.find('.footsteps-of-otari-radioLevelThree')
+    let radioLevelFour = html.find('.footsteps-of-otari-radioLevelFour')
+
+    if (this.mapLevel == 'two') {
+      radioLevelTwo[0].checked = true
+    }
+    if (this.mapLevel == 'three') {
+      radioLevelThree[0].checked = true
+    }
+    if (this.mapLevel == 'four') {
+      radioLevelFour[0].checked = true
+    }
   }
 
   /////////////////////////////
@@ -89,22 +115,18 @@ export class GhostApplication extends FormApplication {
   /////////////////////////////
 
   dragGhostSlider(event) {
-    //not called by onInput
     this.totalProgress = event.currentTarget.value / 100
-    console.log('dragSlider' + this.totalProgress)
     game.modules
       .get('footsteps-of-otari')
       ?.api?._dragGhostSlider(this.totalProgress)
   }
 
   mousedownGhostSlider(event) {
-    console.log('mousedown slider')
     game.modules.get('footsteps-of-otari')?.api?._mousedownGhostSlider()
   }
 
   changeGhostSlider(event) {
     this.totalProgress = event.currentTarget.value / 100
-    console.log('release slider' + this.totalProgress)
     game.modules
       .get('footsteps-of-otari')
       ?.api?._changeGhostSlider(this.totalProgress)
@@ -146,12 +168,10 @@ export class GhostApplication extends FormApplication {
   //////////////////////////////
 
   setToggleButton(isPlaying) {
-    console.log('setToggleButton ' + isPlaying)
     if (isPlaying == true) {
       this.playIcon.css('display', 'none')
       this.pauseIcon.css('display', 'block')
     } else {
-      console.log('why you broken')
       this.playIcon.css('display', 'block')
       this.pauseIcon.css('display', 'none')
     }

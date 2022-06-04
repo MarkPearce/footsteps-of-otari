@@ -1,0 +1,1 @@
+{"_id":"lNrbLkluA5bjbk2Q","name":"Open Footsteps Control","type":"script","author":"BzniecDB1BMN3eyU","img":"modules/footsteps-of-otari/artwork/footsteps-icon.svg","scope":"global","command":"game.modules.get('footsteps-of-otari')?.api?._openFootstepsController()","folder":null,"sort":0,"permission":{"default":0,"BzniecDB1BMN3eyU":3},"flags":{}}
