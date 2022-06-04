@@ -1,4 +1,4 @@
-# Footsteps of Otaro
+# Footsteps of Otari
 
 ![the latest version zip](https://img.shields.io/github/downloads/MarkPearce/footsteps-of-otari/latest/footsteps-of-otari.zip)
 
