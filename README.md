@@ -22,7 +22,7 @@ A Dynamically controlled particle system for the GM to play an animation of the 
 To use: Add the Macro "Open Footsteps Control" from the Footsteps of Otari Macro folder.
 
 Click on it to open the floating control window. If you havent modified the MapIDs it will auto-detect the path to play.
-Use play/pause/speed control on the animation, or scrubb with the timeline
+Use play/pause/speed control on the animation, or scrub with the timeline
 
 ![ghostly control](https://imgur.com/yKPTt1j.gif)
 
