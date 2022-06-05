@@ -2,11 +2,8 @@
 
 ![the latest version zip](https://img.shields.io/github/downloads/MarkPearce/footsteps-of-otari/latest/footsteps-of-otari.zip)
 
-
-
-
 With this module the GM can add an animation of a ghostly image and its foot prints as it makes its way though the dungeon.
-It also contains additional assets, tokens and maps for the premium content release of the Abomination vaults adventure path by Paizo.
+It also contains additional assets, tokens and maps for the Abomination vaults adventure path by Paizo.
 
 There are Journals for the NPC Map handouts, the other assets you can find in the /artwork directory.
 
@@ -14,7 +11,6 @@ Map assets and artwork by Forgotten Adventures, https://www.forgotten-adventures
 Vollok token inspired by and derived from artwork by Greg Bruni, https://www.gregbrunicreations.com/
 
 ![a mossy skull, graven with symbol of Nhimboloth](https://i.imgur.com/o6GwHgJ.png)
-
 
 **Ghost Trail Animations**
 A Dynamically controlled particle system for the GM to play an animation of the ghost's path in AV.
@@ -51,3 +47,4 @@ Hazard tokens for the BrownMold(B20) and Hall of Hatred(B29)
 
 ![a tent by the river](https://i.imgur.com/1DFAtVv.png)
 
+Artwork contained here was previously published in the AV Accesscories module, Map tiles which are only suitable for the community content maps have been removed.

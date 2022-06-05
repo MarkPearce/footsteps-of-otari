@@ -89,11 +89,28 @@ export class GhostApplication extends FormApplication {
     let radioVersionRemaster = html.find(
       '.footsteps-of-otari-radioVersionRemaster',
     )
+    let radioVersionPDF = html.find('.footsteps-of-otari-radioVersionPDF')
+    let radioVersionCommunity = html.find(
+      '.footsteps-of-otari-radioVersionCommunity',
+    )
+
     if (this.mapVersion == 'remaster') {
       radioVersionRemaster[0].checked = true
-    } else {
+    }
+
+    if (this.mapVersion == 'classic') {
       radioVersionClassic[0].checked = true
     }
+
+    if (this.mapVersion == 'community') {
+      radioVersionCommunity[0].checked = true
+    }
+
+    if (this.mapVersion == 'pdf') {
+      radioVersionPDF[0].checked = true
+    }
+
+    //
 
     let radioLevelTwo = html.find('.footsteps-of-otari-radioLevelTwo')
     let radioLevelThree = html.find('.footsteps-of-otari-radioLevelThree')

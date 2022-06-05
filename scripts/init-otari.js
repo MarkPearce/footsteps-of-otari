@@ -66,6 +66,31 @@ let paizo_levelThree =
 
 let paizo_levelFour =
   'M4023,3750c-85,3-166-12-242-1c-76,11-172,26-214-10c-42-36-22-195-44-239c-22-44-37,27-75,2 c-38-25-114,17-97,54c17,37,103,48,125,81s-84.2,13.1-104,33c-20.8,21,65,75,31,82s-152.6-59.4-165-71c-24.3-22.8-84.9,17.6-93,67 c-8.1,49.2-97,48-105,79s-45,252-28,352c17,100-37,217-54,293c-13.6,60.7,26,183,18,286s29,203,55,228c26,25,138,84,205,70 c67-14,152-29,247,13c95,42,200.3-13,200.3-13'
+
+//wOjvBesK2WuKfwgG
+let pdf_levelTwo =
+  'M3407.1,2100.5c41.5,52.6,44.4,125.5,39.2,156.8c-5.9,35-5,79-113,69c-108-10-188.7-18.5-290,0 c-203,37-232,16-323,22c-91,6-54,89.6-101.4,93.3c-33.7,2.7-106.5,25.5-153.1,1.1c-23.9-12.5,14-93.2-42.7-97.8 c-24.4-2,3.8,81.1-18.1,135.1c-19.5,48-44.4,76.8-83,65c-18.7-5.7-11.3-94-33-103c-34.4-14.3-89.3,16.8-123-44 c-46-83,231.7-70,218-13c-25.7,107-170,216.7-203,146c-42-90-122.9-85-134.6-86c-72-6-92.6,12.2-104.8,67.9 c-15.8,72.3,8.1,102-7.9,124c-14.5,19.9-65.2,23.5-82.1-4c-13.1-21.4-14.2-143.1-8-176.9'
+
+//7Z8YIBH35bOWdnUB
+let pdf_levelThree =
+  'M1578.7,4054c-72,0-112,12-126-44c-14-56-12-194,0-230s80,5,108-94c14.5-51.2,38-42,106-42c68,0,218,9,249-8 c31-17,38-65,38-105s5.4-75.9-3-64c-12,17-13,68-7,97s-5,70,41,80s157,3,244,5s162.9,13.7,203.8-51.2c39.4-62.5,76.4-128,88.9-341.3 c7.8-134-60.9-199.9,23.1-256.9c84-57,290.2-73.6,418.2-57.6s39.3,148.8,161.3,192.7c39.6,14.2,126.2,16.9,241.8,2.7 c69.7-8.6,173.4,3.3,262.2,7.1c126.2,5.5,232.7,5.7,257.8,1.8c99.9-15.6,46.8-160.3,94.2-196.4c16.9-12.9,142.2-12.9,158.7,16.2 c23.3,41.2,9.6,219.5,4,248'
+
+//wnRqwm7N2hzjH3q6
+let pdf_levelFour =
+  'M4023,3750c-85,3-166-12-242-1c-76,11-172,26-214-10c-42-36-22-195-44-239c-22-44-37,27-75,2c-38-25-114,17-97,54c17,37,103,48,125,81s-84.2,13.1-104,33c-20.8,21,65,75,31,82s-152.6-59.4-165-71c-24.3-22.8-84.9,17.6-93,67 c-8.1,49.2-97,48-105,79s-45,252-28,352c17,100-37,217-54,293c-13.6,60.7,26,183,18,286s29,203,55,228c26,25,138,84,205,70 c67-14,152-29,247,13c95,42,200.3-13,200.3-13'
+
+//Uo2pzPeBu2a13XdU
+let community_levelTwo =
+  'M3611.1,2104.4c41.5,52.6,44.4,125.5,39.2,156.8c-5.9,35-5,79-113,69c-108-10-188.7-18.5-290,0 c-203,37-232,16-323,22s-54,89.6-101.4,93.3c-33.7,2.7-106.5,25.5-153.1,1.1c-23.9-12.5,14-93.2-42.7-97.8 c-24.4-2,3.8,81.1-18.1,135.1c-19.5,48-44.4,76.8-83,65c-18.7-5.7-11.3-94-33-103c-34.4-14.3-89.3,16.8-123-44 c-46-83,231.7-70,218-13c-25.7,107-170,216.7-203,146c-42-90-122.9-85-134.6-86c-72-6-92.6,12.2-104.8,67.9 c-15.8,72.3,8.1,102-7.9,124c-14.5,19.9-65.2,23.5-82.1-4c-13.1-21.4-14.2-143.1-8-176.9'
+
+//EfIGSYivmDYsPXJl
+let community_levelThree =
+  'M1578.7,4054c-72,0-112,12-126-44c-14-56-12-194,0-230s80,5,108-94c14.5-51.2,38-42,106-42c68,0,218,9,249-8 c31-17,38-65,38-105s5.4-75.9-3-64c-12,17-13,68-7,97s-5,70,41,80s157,3,244,5s162.9,13.7,203.8-51.2c39.4-62.5,76.4-128,88.9-341.3 c7.8-134-60.9-199.9,23.1-256.9c84-57,290.2-73.6,418.2-57.6s39.3,148.8,161.3,192.7c39.6,14.2,126.2,16.9,241.8,2.7 c69.7-8.6,173.4,3.3,262.2,7.1c126.2,5.5,232.7,5.7,257.8,1.8c99.9-15.6,46.8-160.3,94.2-196.4c16.9-12.9,142.2-12.9,158.7,16.2 c23.3,41.2,9.6,219.5,4,248'
+
+//86gBs8k1sHCMnpoF
+let community_levelFour =
+  'M4223,4050c-85,3-166-12-242-1c-76,11-172,26-214-10c-42-36-22-195-44-239c-22-44-37,27-75,2 c-38-25-114,17-97,54c17,37,103,48,125,81s-84.2,13.1-104,33c-20.8,21,65,75,31,82s-152.6-59.4-165-71c-24.3-22.8-84.9,17.6-93,67 c-8.1,49.2-71.7,65.7-79.7,96.7s-43,200-26,300c17,100-64.3,251.3-81.3,327.3c-13.6,60.7,26,183,18,286s29,203,55,228 c26,25,138,84,205,70c67-14,152-29,247,13c95,42,218.3,31.7,218.3,31.7'
+
 /////////////////////////////
 //    API DEFININITION     //
 /////////////////////////////
@@ -188,36 +213,61 @@ Hooks.once('socketlib.ready', () => {
 //////////////////////////
 
 function assignPath() {
-  console.log('assignPath ' + game.user.id)
   let pathDuration
   if (mapVersion == 'remaster') {
     if (mapLevel == 'two') {
       ghostPath = narchy_levelTwo
       pathDuration = 36
     }
-
     if (mapLevel == 'three') {
       ghostPath = narchy_levelThree
       pathDuration = 66
     }
-
     if (mapLevel == 'four') {
       ghostPath = narchy_levelFour
       pathDuration = 48
     }
-  } else {
+  }
+  if (mapVersion == 'classic') {
     if (mapLevel == 'two') {
       ghostPath = paizo_levelTwo
       pathDuration = 36
     }
-
     if (mapLevel == 'three') {
       ghostPath = paizo_levelThree
       pathDuration = 66
     }
-
     if (mapLevel == 'four') {
       ghostPath = paizo_levelFour
+      pathDuration = 48
+    }
+  }
+
+  if (mapVersion == 'pdf') {
+    if (mapLevel == 'two') {
+      ghostPath = pdf_levelTwo
+      pathDuration = 36
+    }
+    if (mapLevel == 'three') {
+      ghostPath = pdf_levelThree
+      pathDuration = 66
+    }
+    if (mapLevel == 'four') {
+      ghostPath = pdf_levelFour
+      pathDuration = 48
+    }
+  }
+  if (mapVersion == 'community') {
+    if (mapLevel == 'two') {
+      ghostPath = community_levelTwo
+      pathDuration = 36
+    }
+    if (mapLevel == 'three') {
+      ghostPath = community_levelThree
+      pathDuration = 66
+    }
+    if (mapLevel == 'four') {
+      ghostPath = community_levelFour
       pathDuration = 48
     }
   }
@@ -402,6 +452,30 @@ async function openFootstepsController() {
       mapVersion = 'classic'
       mapLevel = 'four'
       break
+    case 'wOjvBesK2WuKfwgG':
+      mapVersion = 'pdf'
+      mapLevel = 'two'
+      break
+    case '7Z8YIBH35bOWdnUB':
+      mapVersion = 'pdf'
+      mapLevel = 'three'
+      break
+    case 'wnRqwm7N2hzjH3q6':
+      mapVersion = 'pdf'
+      mapLevel = 'four'
+      break
+    case 'Uo2pzPeBu2a13XdU':
+      mapVersion = 'community'
+      mapLevel = 'two'
+      break
+    case 'EfIGSYivmDYsPXJl':
+      mapVersion = 'community'
+      mapLevel = 'three'
+      break
+    case '86gBs8k1sHCMnpoF':
+      mapVersion = 'community'
+      mapLevel = 'four'
+      break
   }
   //this needs to be shared to all clients.
   ghostApplication.totalProgress = ghostTimeline.progress()
@@ -414,11 +488,6 @@ async function openFootstepsController() {
 }
 
 async function updatePathSelection(args) {
-  console.log('setpath everyone')
-  console.log('whatVersion ' + args[0])
-  console.log('whatLevel ' + args[1])
-  console.log('whatProgress ' + args[2])
-
   ghostTimeline.totalProgress = args[2]
   mapVersion = args[0]
   mapLevel = args[1]

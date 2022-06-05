@@ -1,9 +1,9 @@
 {
   "name": "footsteps-of-otari",
   "title": "Footsteps of Otari",
-  "description": "Ghostly footprints and player handouts for Abomination Vaults Premium Module",
+  "description": "Ghostly footprints and player handouts for The PF2e Abomination Vaults module",
   "authors": [{ "name": "Mark Pearce", "discord": "Mark Pearce#2772" }],
-  "version": "0.0.3",
+  "version": "0.0.4",
   "minimumCoreVersion": "9.0",
   "compatibleCoreVersion": "9.0",
   "esmodules": ["scripts/init-otari.js", "greensock/esm/all.js"],
@@ -34,10 +34,6 @@
   "system": ["pf2e"],
 
   "dependencies": [
-    {
-      "name": "pf2e-abomination-vaults",
-      "manifest": "https://foundryvtt.s3.us-west-2.amazonaws.com/modules/pf2e-abomination-vaults/module.json"
-    },
     {
       "name": "pf2e",
       "type": "system"
