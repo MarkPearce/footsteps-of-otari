@@ -1,7 +1,7 @@
 # Footsteps of Otari
 
 ![the latest version zip](https://img.shields.io/github/downloads/MarkPearce/footsteps-of-otari/latest/footsteps-of-otari.zip)
-![the previous version zip](https://img.shields.io/github/downloads/MarkPearce/footsteps-of-otari/releases/download/1.0.3/footsteps-of-otari.zip)
+![the previous version zip](https://img.shields.io/github/downloads/MarkPearce/footsteps-of-otari/1.0.3/footsteps-of-otari.zip)
 
 With this module the GM can add an animation of a ghostly image and its foot prints as it makes its way though the dungeon.
 It also contains additional assets, tokens and maps for the Abomination vaults adventure path by Paizo.
