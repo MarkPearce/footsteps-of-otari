@@ -3,7 +3,7 @@
   "title": "Footsteps of Otari",
   "description": "Ghostly footprints and player handouts for The PF2e Abomination Vaults module",
   "authors": [{ "name": "Mark Pearce", "discord": "Mark Pearce#2772" }],
-  "version": "1.1.0",
+  "version": "1.2.0",
   "minimumCoreVersion": "9.0",
   "compatibleCoreVersion": "9.0",
   "esmodules": ["scripts/init-otari.js", "greensock/esm/all.js"],
