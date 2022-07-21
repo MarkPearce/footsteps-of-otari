@@ -1,7 +1,6 @@
 # Footsteps of Otari
 
 ![the latest version zip](https://img.shields.io/github/downloads/MarkPearce/footsteps-of-otari/latest/footsteps-of-otari.zip)
-![the previous version zip](https://img.shields.io/github/downloads/MarkPearce/footsteps-of-otari/1.0.3/footsteps-of-otari.zip)
 
 With this module the GM can add an animation of a ghostly image and its foot prints as it makes its way though the dungeon.
 It also contains additional assets, tokens and maps for the Abomination vaults adventure path by Paizo.
@@ -20,8 +19,6 @@ To use: Add the Macro "Open Footsteps Control" from the Footsteps of Otari Macro
 
 Click on it to open the floating control window. If you havent modified the MapIDs it will auto-detect the path to play.
 Use play/pause/speed control on the animation, or scrub with the timeline
-
-![ghostly control](https://imgur.com/yKPTt1j.gif)
 
 ![control ui](https://imgur.com/lcCrqf1.png)
 
